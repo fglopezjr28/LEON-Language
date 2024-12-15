@@ -6,6 +6,7 @@
 @1stNumber
 functionName 
 isFunctionIdentifier
+TestFunctionRules
 () , {} // []
 
 'a'

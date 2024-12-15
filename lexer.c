@@ -29,7 +29,7 @@ void isVariableIdentifier(const char *token, int lineNumber, char *buffer, int *
 }
 
 void isFunctionIdentifier(const char *token, int lineNumber, char *buffer, int *bufferIndex) {
-    if (isalpha(token[0])) {  // Check if the first character is alphabetic
+    if (islower(token[0])) {  // Check if the first character is lowercase
         size_t tokenLength = strlen(token);  // Calculate length once
         int valid = 1;
 
