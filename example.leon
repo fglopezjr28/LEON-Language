@@ -1,7 +1,12 @@
 @age 
 @name
+@_score
+@totalStudents
+@Total
+@1stNumber
 functionName 
 isFunctionIdentifier
+TestFunctionRules
 () , {} // []
 
 'a'

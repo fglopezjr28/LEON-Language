@@ -9,11 +9,12 @@ void appendToBuffer(char *buffer, int *bufferIndex, const char *tokenType, const
 }
 
 void isVariableIdentifier(const char *token, int lineNumber, char *buffer, int *bufferIndex) {
-    if (token[0] == '@') {
+    // Check if the token starts with '@' and the second character is lowercase or '_'
+    if (token[0] == '@' && (islower(token[1]) || token[1] == '_')) { 
         size_t tokenLength = strlen(token);  // Calculate length once
         int valid = 1;
 
-        // Check all characters after the first one
+        // Check all remaining characters after the first one
         for (int i = 1; i < tokenLength; i++) {
             if (!isalnum(token[i]) && token[i] != '_') {
                 valid = 0;
@@ -28,7 +29,7 @@ void isVariableIdentifier(const char *token, int lineNumber, char *buffer, int *
 }
 
 void isFunctionIdentifier(const char *token, int lineNumber, char *buffer, int *bufferIndex) {
-    if (isalpha(token[0])) {  // Check if the first character is alphabetic
+    if (islower(token[0])) {  // Check if the first character is lowercase
         size_t tokenLength = strlen(token);  // Calculate length once
         int valid = 1;
 
@@ -895,7 +896,27 @@ void processToken(const char *token, int lineNumber, char *buffer, int *bufferIn
                 char delimiter[2] = {token[i], '\0'};
                 isDelimiter(delimiter, lineNumber, buffer, bufferIndex);
             }
-        } 
+        }
+        // Handle variable identifiers
+        else if (token[i] == '@') {
+            tempBuffer[j++] = token[i];
+            while (i + 1 < tokenLength && (isalnum(token[i + 1]) || token[i + 1] == '_')) {
+                tempBuffer[j++] = token[++i];
+            }
+            tempBuffer[j] = '\0';
+            isVariableIdentifier(tempBuffer, lineNumber, buffer, bufferIndex);
+            j = 0; // Reset tempBuffer
+        }
+        // Handle function identifiers
+        else if (islower(token[i])) {
+            tempBuffer[j++] = token[i];
+            while (i + 1 < tokenLength && (isalnum(token[i + 1]) || token[i + 1] == '_')) {
+                tempBuffer[j++] = token[++i];
+            }
+            tempBuffer[j] = '\0';
+            isFunctionIdentifier(tempBuffer, lineNumber, buffer, bufferIndex);
+            j = 0; // Reset tempBuffer
+        }
         // Handle normal characters (add to tempBuffer)
         else {
             tempBuffer[j++] = token[i];
