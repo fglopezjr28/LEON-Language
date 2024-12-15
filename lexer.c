@@ -895,7 +895,17 @@ void processToken(const char *token, int lineNumber, char *buffer, int *bufferIn
                 char delimiter[2] = {token[i], '\0'};
                 isDelimiter(delimiter, lineNumber, buffer, bufferIndex);
             }
-        } 
+        }
+        // Handle variable identifiers
+        else if (token[i] == '@') {
+            tempBuffer[j++] = token[i];
+            while (i + 1 < tokenLength && isalnum(token[i + 1])) {
+                tempBuffer[j++] = token[++i];
+            }
+            tempBuffer[j] = '\0';
+            isVariableIdentifier(tempBuffer, lineNumber, buffer, bufferIndex);
+            j = 0; // Reset tempBuffer
+        }
         // Handle normal characters (add to tempBuffer)
         else {
             tempBuffer[j++] = token[i];
