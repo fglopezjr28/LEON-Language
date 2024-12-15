@@ -9,12 +9,13 @@ void appendToBuffer(char *buffer, int *bufferIndex, const char *tokenType, const
 }
 
 void isVariableIdentifier(const char *token, int lineNumber, char *buffer, int *bufferIndex) {
-    if (token[0] == '@') {
+    // Check if the token starts with '@' and the second character is lowercase or '_'
+    if (token[0] == '@' && (islower(token[1]) || token[1] == '_')) { 
         size_t tokenLength = strlen(token);  // Calculate length once
         int valid = 1;
 
-        // Check all characters after the first one
-        for (int i = 1; i < tokenLength; i++) {
+        // Check all remaining characters after the first and second one
+        for (int i = 2; i < tokenLength; i++) {
             if (!isalnum(token[i]) && token[i] != '_') {
                 valid = 0;
                 break;  // Return early if invalid

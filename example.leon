@@ -1,5 +1,7 @@
 @age 
 @name
+@_score
+@totalStudents
 functionName 
 isFunctionIdentifier
 () , {} // []
