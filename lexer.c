@@ -14,8 +14,8 @@ void isVariableIdentifier(const char *token, int lineNumber, char *buffer, int *
         size_t tokenLength = strlen(token);  // Calculate length once
         int valid = 1;
 
-        // Check all remaining characters after the first and second one
-        for (int i = 2; i < tokenLength; i++) {
+        // Check all remaining characters after the first one
+        for (int i = 1; i < tokenLength; i++) {
             if (!isalnum(token[i]) && token[i] != '_') {
                 valid = 0;
                 break;  // Return early if invalid
@@ -900,7 +900,7 @@ void processToken(const char *token, int lineNumber, char *buffer, int *bufferIn
         // Handle variable identifiers
         else if (token[i] == '@') {
             tempBuffer[j++] = token[i];
-            while (i + 1 < tokenLength && isalnum(token[i + 1])) {
+            while (i + 1 < tokenLength && (isalnum(token[i + 1]) || token[i + 1] == '_')) {
                 tempBuffer[j++] = token[++i];
             }
             tempBuffer[j] = '\0';
