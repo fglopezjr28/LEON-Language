@@ -32,6 +32,7 @@
 | Constant Value (Float)    | 12.7                      | 25         |
 | Comment                   | $comment                  | 27         |
 | Variable                  | @variable                 | 29         |
+| Function                  | fn_functionName           | 30         |
 | Noise Word                | and                       | 33         |
 | Noise Word                | to                        | 35         |
 | Noise Word                | for                       | 36         |

@@ -364,6 +364,28 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                             break;
                     }
                     break;
+                case 'n': // Check for "fn"
+                    switch (token[2]) {
+                        case '_': // Check for "fn_"
+                            if (islower(token[3])) {
+                                size_t tokenLength = strlen(token);  // Calculate length once
+                                int valid = 1;
+
+                                // Check all characters after the first one
+                                for (int i = 4; i < tokenLength; i++) {
+                                    if (!isalnum(token[i]) && token[i] != '_') {
+                                        valid = 0;
+                                        break;  // Return early if invalid
+                                    }
+                                }
+                                if (valid) {
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Function", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
+                                }
+                            }
+                            break;
+                    }
+                    break;
                 case 'o': // Check for "fo"
                     switch (token[2]) {
                         case 'r': // Check for "for"
@@ -663,22 +685,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
             break;
 
         default:
-            if (islower(token[0])) { // Function Identifier
-                size_t tokenLength = strlen(token);  // Calculate length once
-                int valid = 1;
-
-                // Check all characters after the first one
-                for (int i = 1; i < tokenLength; i++) {
-                    if (!isalnum(token[i]) && token[i] != '_') {
-                        valid = 0;
-                        break;  // Return early if invalid
-                    }
-                }
-                if (valid) {
-                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Function", token, lineNumber);
-                    appendToBuffer(buffer, temp);
-                }
-            } else if (token[0] == '@' && (islower(token[1]) || token[1] == '_')) { // Variable Identifier
+            if (token[0] == '@' && (islower(token[1]) || token[1] == '_')) { // Variable Identifier
                 size_t tokenLength = strlen(token);  // Calculate length once
                 int valid = 1;
 
