@@ -1,0 +1,68 @@
++---------------------------+---------------------------+------------+
+| Token Type                | Lexeme                    | Line       |
++---------------------------+---------------------------+------------+
+| Delimiter                 | (                         | 1          |
+| Delimiter                 | )                         | 1          |
+| Delimiter                 | ,                         | 1          |
+| Delimiter                 | {                         | 1          |
+| Delimiter                 | }                         | 1          |
+| Delimiter                 | //                        | 1          |
+| Delimiter                 | [                         | 2          |
+| Delimiter                 | ]                         | 2          |
+| Arithmetic Operator       | +                         | 4          |
+| Arithmetic Operator       | -                         | 5          |
+| Arithmetic Operator       | /                         | 6          |
+| Arithmetic Operator       | *                         | 7          |
+| Arithmetic Operator       | %                         | 8          |
+| Arithmetic Operator       | ^                         | 9          |
+| Arithmetic Operator       | /                         | 10         |
+| Relational Operator       | <                         | 10         |
+| Assignment Operator       | =                         | 11         |
+| Relational Operator       | ==                        | 12         |
+| Relational Operator       | ==                        | 13         |
+| Relational Operator       | !=                        | 14         |
+| Relational Operator       | <                         | 15         |
+| Relational Operator       | <=                        | 16         |
+| Relational Operator       | >                         | 17         |
+| Relational Operator       | >=                        | 18         |
+| Constant Value (Integer)  | 1                         | 20         |
+| Constant Value (Integer)  | 2                         | 21         |
+| Constant Value (Integer)  | 3                         | 22         |
+| Constant Value (Integer)  | 12                        | 23         |
+| Constant Value (Float)    | 12.7                      | 25         |
+| Comment                   | $comment                  | 27         |
+| Variable                  | @variable                 | 29         |
+| Function                  | fn_functionName           | 30         |
+| Noise Word                | and                       | 33         |
+| Noise Word                | to                        | 35         |
+| Noise Word                | for                       | 36         |
+| Noise Word                | from                      | 37         |
+| Noise Word                | until                     | 38         |
+| Keyword                   | alt                       | 40         |
+| Keyword                   | bind                      | 41         |
+| Keyword                   | binar                     | 42         |
+| Keyword                   | craft                     | 43         |
+| Keyword                   | deca                      | 44         |
+| Keyword                   | disp                      | 45         |
+| Keyword                   | dum                       | 46         |
+| Keyword                   | endo                      | 48         |
+| Keyword                   | exec                      | 49         |
+| Keyword                   | fetch                     | 50         |
+| Keyword                   | flux                      | 51         |
+| Keyword                   | formo                     | 52         |
+| Keyword                   | numb                      | 53         |
+| Keyword                   | opt                       | 54         |
+| Keyword                   | pro                       | 55         |
+| Keyword                   | quando                    | 56         |
+| Keyword                   | set                       | 57         |
+| Keyword                   | signa                     | 58         |
+| Keyword                   | starto                    | 59         |
+| Keyword                   | unset                     | 60         |
+| Keyword                   | yield                     | 61         |
+| Reserved Word             | goto                      | 64         |
+| Reserved Word             | const                     | 65         |
+| Reserved Word             | null                      | 66         |
+| Reserved Word             | true                      | 67         |
+| Reserved Word             | false                     | 68         |
+| INVALID                   | ?asdfo                    | 70         |
++---------------------------+---------------------------+------------+
