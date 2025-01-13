@@ -1,73 +1,11 @@
 +---------------------------+---------------------------+------------+
 | Token Type                | Lexeme                    | Line       |
 +---------------------------+---------------------------+------------+
-| Delimiter                 | (                         | 1          |
-| Delimiter                 | )                         | 1          |
-| Delimiter                 | ,                         | 1          |
-| Delimiter                 | {                         | 1          |
-| Delimiter                 | }                         | 1          |
-| Delimiter                 | //                        | 1          |
-| Delimiter                 | [                         | 2          |
-| Delimiter                 | ]                         | 2          |
-| Arithmetic Operator       | +                         | 4          |
-| Arithmetic Operator       | -                         | 5          |
-| Arithmetic Operator       | /                         | 6          |
-| Arithmetic Operator       | *                         | 7          |
-| Arithmetic Operator       | %                         | 8          |
-| Arithmetic Operator       | ^                         | 9          |
-| Arithmetic Operator       | /                         | 10         |
-| Relational Operator       | <                         | 10         |
-| Assignment Operator       | =                         | 11         |
-| Relational Operator       | ==                        | 12         |
-| Relational Operator       | ==                        | 13         |
-| Relational Operator       | !=                        | 14         |
-| Relational Operator       | <                         | 15         |
-| Relational Operator       | <=                        | 16         |
-| Relational Operator       | >                         | 17         |
-| Relational Operator       | >=                        | 18         |
-| Arithmetic Operator       | -                         | 20         |
-| Integer Literal           | 1                         | 20         |
-| Integer Literal           | 1                         | 21         |
-| Integer Literal           | 2                         | 22         |
-| Integer Literal           | 3                         | 23         |
-| Integer Literal           | 12                        | 24         |
-| Float Literal             | 12.7                      | 26         |
-| Character Literal         | 'a'                       | 27         |
-| String Literal            | "String"                  | 28         |
-| Comment                   | $comment                  | 30         |
-| Variable                  | @variable                 | 32         |
-| Function                  | fn_functionName           | 33         |
-| Noise Word                | and                       | 36         |
-| Noise Word                | to                        | 38         |
-| Noise Word                | for                       | 39         |
-| Noise Word                | from                      | 40         |
-| Noise Word                | until                     | 41         |
-| Keyword                   | alt                       | 43         |
-| Keyword                   | bind                      | 44         |
-| Keyword                   | binar                     | 45         |
-| Keyword                   | craft                     | 46         |
-| Keyword                   | deca                      | 47         |
-| Keyword                   | disp                      | 48         |
-| Keyword                   | dum                       | 49         |
-| Keyword                   | duplus                    | 50         |
-| Keyword                   | endo                      | 51         |
-| Keyword                   | exec                      | 52         |
-| Keyword                   | fetch                     | 53         |
-| Keyword                   | flux                      | 54         |
-| Keyword                   | formo                     | 55         |
-| Keyword                   | numb                      | 56         |
-| Keyword                   | opt                       | 57         |
-| Keyword                   | pro                       | 58         |
-| Keyword                   | quando                    | 59         |
-| Keyword                   | set                       | 60         |
-| Keyword                   | signa                     | 61         |
-| Keyword                   | starto                    | 62         |
-| Keyword                   | unset                     | 63         |
-| Keyword                   | yield                     | 64         |
-| Reserved Word             | goto                      | 67         |
-| Reserved Word             | const                     | 68         |
-| Reserved Word             | null                      | 69         |
-| Reserved Word             | true                      | 70         |
-| Reserved Word             | false                     | 71         |
-| INVALID                   | ?asdfo                    | 73         |
+| KEYWORD                   | disp                      | 1          |
+| DELIMETER                 | (                         | 1          |
+| STRING_LITERAL            | Your                      | 1          |
+| DELIMETER                 | ,                         | 1          |
+| VARIABLE                  | @age                      | 1          |
+| DELIMETER                 | )                         | 1          |
+| LINE_TERMINATOR           | //                        | 1          |
 +---------------------------+---------------------------+------------+

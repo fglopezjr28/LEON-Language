@@ -47,60 +47,65 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
 
     switch (token[0]) {
         case '+': case '-': case '*': case '%': case '^': // Arithmetic Operators
-            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Arithmetic Operator", token, lineNumber);
+            if (token[1] == '\0')
+            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "ARITHMETIC_OP", token, lineNumber);
             appendToBuffer(buffer, temp);
             break;
         case '=': // Assignment Operator or Relational Operator
             if (token[1] == '=')
-                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Relational Operator", "==", lineNumber);
+                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "RELATIONAL_OP", "==", lineNumber);
             else
-                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Assignment Operator", "=", lineNumber);
+                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "ASSIGNMENT_OP", "=", lineNumber);
             appendToBuffer(buffer, temp);
             break;
         case '!': // Relational Operator
-            if (token[1] == '=')
-                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Relational Operator", "!=", lineNumber);
-            appendToBuffer(buffer, temp);
+            if (token[1] == '=') {
+                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "RELATIONAL_OP", "!=", lineNumber);
+                appendToBuffer(buffer, temp);
+            } else if (token[1] == '\0') {
+                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "LOGICAL_OP", "!", lineNumber);
+                appendToBuffer(buffer, temp);
+            }
             break;
         case '>': // Relational Operator
             if (token[1] == '=')
-                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Relational Operator", ">=", lineNumber);
+                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "RELATIONAL_OP", ">=", lineNumber);
             else
-                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Relational Operator", ">", lineNumber);
+                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "RELATIONAL_OP", ">", lineNumber);
             appendToBuffer(buffer, temp);
             break;
         case '<': // Relational Operator
             if (token[1] == '=')
-                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Relational Operator", "<=", lineNumber);
-            else
-                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Relational Operator", "<", lineNumber);
-            appendToBuffer(buffer, temp);
+                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "RELATIONAL_OP", "<=", lineNumber);
+            else 
+                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "RELATIONAL_OP", "<", lineNumber);
+            appendToBuffer(buffer, temp); 
             break;
         case '&': // Logical Operator
             if (token[1] == '&')
-                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Logical Operator", "&&", lineNumber);
+                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "LOGICAL_OP", "&&", lineNumber);
             appendToBuffer(buffer, temp);
             break;
         case '|': // Logical Operator
             if (token[1] == '|')
-                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Logical Operator", "||", lineNumber);
+                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "LOGICAL_OP", "||", lineNumber);
             appendToBuffer(buffer, temp);
             break;
         case '/': // Arithmetic Operator or Delimiter
-            if (token[1] == '/') {
-                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Delimiter", "//", lineNumber);
+            if (token[1] == '/')
+                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "LINE_TERMINATOR", "//", lineNumber);
+            else if (token[1] == '<')
+                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "ARITHMETIC_OP", "/<", lineNumber);
+            else
+                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "ARITHMETIC_OP", "/", lineNumber);
                 appendToBuffer(buffer, temp);
-            } else {
-                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Arithmetic Operator", "/", lineNumber);
-                appendToBuffer(buffer, temp);
-            }
             break;
         case '(': case ')': case '{': case '}': case '[': case ']': case ',': // Delimiters
-            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Delimiter", token, lineNumber);
+            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "DELIMETER", token, lineNumber);
             appendToBuffer(buffer, temp);
             break;
         case '$': // Comment
-            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Comment", token, lineNumber);
+            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "COMMENT", token, lineNumber);
             appendToBuffer(buffer, temp);
             break;
 
@@ -112,7 +117,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                         case 'd':
                             if (token[3] == '\0') { // End of string
                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                        "Noise Word", "and", lineNumber);
+                                        "NOISE_WORD", "and", lineNumber);
                                 appendToBuffer(buffer, temp);
                             }
                             break;
@@ -124,7 +129,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                         case 't':
                             if (token[3] == '\0') { // End of string
                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                        "Keyword", "alt", lineNumber);
+                                        "KEYWORD", "alt", lineNumber);
                                 appendToBuffer(buffer, temp);
                             }
                             break;
@@ -145,7 +150,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         case 'r': // Check for "binar"
                                             if (token[5] == '\0') { // End of string
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                        "Keyword", "binar", lineNumber);
+                                                        "KEYWORD", "binar", lineNumber);
                                                 appendToBuffer(buffer, temp);
                                             }
                                             break;
@@ -155,7 +160,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                 case 'd': // Check for "bind"
                                     if (token[4] == '\0') { // End of string
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                "Keyword", "bind", lineNumber);
+                                                "KEYWORD", "bind", lineNumber);
                                         appendToBuffer(buffer, temp);
                                     }
                                     break;
@@ -178,7 +183,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         case 't': // Check for "const"
                                             if (token[5] == '\0') { // End of string confirms "const"
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                        "Reserved Word", "const", lineNumber);
+                                                        "RESERVED_WORD", "const", lineNumber);
                                                 appendToBuffer(buffer, temp);
                                             }
                                             break;
@@ -198,7 +203,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         case 't': // Check for "craft"
                                             if (token[5] == '\0') { // End of string confirms "craft"
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                        "Keyword", "craft", lineNumber);
+                                                        "KEYWORD", "craft", lineNumber);
                                                 appendToBuffer(buffer, temp);
                                             }
                                             break;
@@ -219,7 +224,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                 case 'a': // Check for "deca"
                                     if (token[4] == '\0') { // End of string confirms "deca"
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                "Keyword", "deca", lineNumber);
+                                                "KEYWORD", "deca", lineNumber);
                                         appendToBuffer(buffer, temp);
                                     }
                                     break;
@@ -234,7 +239,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                 case 'p': // Check for "disp"
                                     if (token[4] == '\0') { // End of string confirms "disp"
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                "Keyword", "disp", lineNumber);
+                                                "KEYWORD", "disp", lineNumber);
                                         appendToBuffer(buffer, temp);
                                     }
                                     break;
@@ -247,7 +252,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                         case 'm': // Check for "dum"
                             if (token[3] == '\0') { // End of string confirms "dum"
                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                        "Keyword", "dum", lineNumber);
+                                        "KEYWORD", "dum", lineNumber);
                                 appendToBuffer(buffer, temp);
                             }
                             break;
@@ -259,7 +264,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         case 'u': // Check for "duplu"
                                             if (token[5] == 's' && token[6] == '\0') { // End of string confirms "duplus"
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                        "Keyword", "duplus", lineNumber);
+                                                        "KEYWORD", "duplus", lineNumber);
                                                 appendToBuffer(buffer, temp);
                                             }
                                             break;
@@ -282,7 +287,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                 case 'o': // Check for "endo"
                                     if (token[4] == '\0') { // End of string confirms "endo"
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                "Keyword", "endo", lineNumber);
+                                                "KEYWORD", "endo", lineNumber);
                                         appendToBuffer(buffer, temp);
                                     }
                                     break;
@@ -297,7 +302,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                 case 'c': // Check for "exec"
                                     if (token[4] == '\0') { // End of string confirms "exec"
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                "Keyword", "exec", lineNumber);
+                                                "KEYWORD", "exec", lineNumber);
                                         appendToBuffer(buffer, temp);
                                     }
                                     break;
@@ -320,7 +325,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         case 'e': // Check for "false"
                                             if (token[5] == '\0') { // End of string confirms "false"
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                        "Reserved Word", "false", lineNumber);
+                                                        "RESERVED_WORD", "false", lineNumber);
                                                 appendToBuffer(buffer, temp);
                                             }
                                             break;
@@ -339,7 +344,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         case 'h': // Check for "fetch"
                                             if (token[5] == '\0') { // End of string confirms "fetch"
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                        "Keyword", "fetch", lineNumber);
+                                                        "KEYWORD", "fetch", lineNumber);
                                                 appendToBuffer(buffer, temp);
                                             }
                                             break;
@@ -356,7 +361,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                 case 'x': // Check for "flux"
                                     if (token[4] == '\0') { // End of string confirms "flux"
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                "Keyword", "flux", lineNumber);
+                                                "KEYWORD", "flux", lineNumber);
                                         appendToBuffer(buffer, temp);
                                     }
                                     break;
@@ -379,7 +384,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                     }
                                 }
                                 if (valid) {
-                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Function", token, lineNumber);
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "FUNCTION", token, lineNumber);
                                     appendToBuffer(buffer, temp);
                                 }
                             }
@@ -392,7 +397,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                             switch (token[3]) {
                                 case '\0': // End of string confirms "for"
                                     snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                            "Noise Word", "for", lineNumber);
+                                            "NOISE_WORD", "for", lineNumber);
                                     appendToBuffer(buffer, temp);
                                     break;
                                 case 'm': // Check for "form"
@@ -400,7 +405,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         case 'o': // Check for "formo"
                                             if (token[5] == '\0') { // End of string confirms "formo"
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                        "Keyword", "formo", lineNumber);
+                                                        "KEYWORD", "formo", lineNumber);
                                                 appendToBuffer(buffer, temp);
                                             }
                                             break;
@@ -417,7 +422,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                 case 'm': // Check for "from"
                                     if (token[4] == '\0') { // End of string confirms "from"
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                "Noise Word", "from", lineNumber);
+                                                "NOISE_WORD", "from", lineNumber);
                                         appendToBuffer(buffer, temp);
                                     }
                                     break;
@@ -437,7 +442,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                 case 'o': // Check for "goto"
                                     if (token[4] == '\0') { // End of string confirms "goto"
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                "Reserved Word", "goto", lineNumber);
+                                                "RESERVED_WORD", "goto", lineNumber);
                                         appendToBuffer(buffer, temp);
                                     }
                                     break;
@@ -457,7 +462,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                 case 'l': // Check for "null"
                                     if (token[4] == '\0') { // End of string confirms "null"
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                "Reserved Word", "null", lineNumber);
+                                                "RESERVED_WORD", "null", lineNumber);
                                         appendToBuffer(buffer, temp);
                                     }
                                     break;
@@ -467,7 +472,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                 case 'b': // Check for "numb"
                                     if (token[4] == '\0') { // End of string confirms "numb"
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                "Keyword", "numb", lineNumber);
+                                                "KEYWORD", "numb", lineNumber);
                                         appendToBuffer(buffer, temp);
                                     }
                                     break;
@@ -485,7 +490,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                         case 't': // Check for "opt"
                             if (token[3] == '\0') { // End of string confirms "opt"
                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                        "Keyword", "opt", lineNumber);
+                                        "KEYWORD", "opt", lineNumber);
                                 appendToBuffer(buffer, temp);
                             }
                             break;
@@ -501,7 +506,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                         case 'o': // Check for "pro"
                             if (token[3] == '\0') { // End of string confirms "pro"
                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                        "Keyword", "pro", lineNumber);
+                                        "KEYWORD", "pro", lineNumber);
                                 appendToBuffer(buffer, temp);
                             }
                             break;
@@ -523,7 +528,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                                 case 'o': // Check for "quando"
                                                     if (token[6] == '\0') { // End of string confirms "quando"
                                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                                "Keyword", "quando", lineNumber);
+                                                                "KEYWORD", "quando", lineNumber);
                                                         appendToBuffer(buffer, temp);
                                                     }
                                                     break;
@@ -545,7 +550,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                         case 't': // Check for "set"
                             if (token[3] == '\0') { // End of string confirms "set"
                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                        "Keyword", "set", lineNumber);
+                                        "KEYWORD", "set", lineNumber);
                                 appendToBuffer(buffer, temp);
                             }
                             break;
@@ -560,7 +565,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         case 'a': // Check for "signa"
                                             if (token[5] == '\0') { // End of string confirms "signa"
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                        "Keyword", "signa", lineNumber);
+                                                        "KEYWORD", "signa", lineNumber);
                                                 appendToBuffer(buffer, temp);
                                             }
                                             break;
@@ -581,7 +586,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                                 case 'o': // Check for "starto"
                                                     if (token[6] == '\0') { // End of string confirms "starto"
                                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                                "Keyword", "starto", lineNumber);
+                                                                "KEYWORD", "starto", lineNumber);
                                                         appendToBuffer(buffer, temp);
                                                     }
                                                     break;
@@ -601,7 +606,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                 case 'o': // Check for "to"
                     if (token[2] == '\0') { // End of string confirms "to"
                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                "Noise Word", "to", lineNumber);
+                                "NOISE_WORD", "to", lineNumber);
                         appendToBuffer(buffer, temp);
                     }
                 case 'r': // Check for "tr"
@@ -611,7 +616,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                 case 'e': // Check for "true"
                                     if (token[4] == '\0') { // End of string confirms "true"
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                "Reserved Word", "true", lineNumber);
+                                                "RESERVED_WORD", "true", lineNumber);
                                         appendToBuffer(buffer, temp);
                                     }
                                     break;
@@ -633,7 +638,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         case 't': // Check for "unset"
                                             if (token[5] == '\0') { // End of string confirms "unset"
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                        "Keyword", "unset", lineNumber);
+                                                        "KEYWORD", "unset", lineNumber);
                                                 appendToBuffer(buffer, temp);
                                             }
                                             break;
@@ -647,7 +652,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         case 'l': // Check for "until"
                                             if (token[5] == '\0') { // End of string confirms "until"
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                        "Noise Word", "until", lineNumber);
+                                                        "NOISE_WORD", "until", lineNumber);
                                                 appendToBuffer(buffer, temp);
                                             }
                                             break;
@@ -671,7 +676,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         case 'd': // Check for "yield"
                                             if (token[5] == '\0') { // End of string confirms "yield"
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                        "Keyword", "yield", lineNumber);
+                                                        "KEYWORD", "yield", lineNumber);
                                                 appendToBuffer(buffer, temp);
                                             }
                                             break;
@@ -686,26 +691,23 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
 
         default:
             if (token[0] == '\'' && token[strlen(token) - 1] == '\'') { // Character Literal
-                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Character Literal", token, lineNumber);
+                // Extract the character between the single quotes
+                char characterValue = token[1];  // Token is like 'a', so the character is at index 1
+
+                snprintf(temp, sizeof(temp), "| %-25s | %-25c | %-10d |\n", "CHAR_LITERAL", characterValue, lineNumber);
                 appendToBuffer(buffer, temp);
             } else if (token[0] == '"' && token[strlen(token) - 1] == '"') { // String Literal
-                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "String Literal", token, lineNumber);
-                appendToBuffer(buffer, temp);
-            } else if (token[0] == '@' && (islower(token[1]) || token[1] == '_')) { // Variable Identifier
-                size_t tokenLength = strlen(token);  // Calculate length once
-                int valid = 1;
+                // Remove the surrounding quotes
+                char valueWithoutQuotes[strlen(token) - 1];
+                int index = 0;
 
-                // Check all remaining characters after the first one
-                for (int i = 1; i < tokenLength; i++) {
-                    if (!isalnum(token[i]) && token[i] != '_') {
-                        valid = 0;
-                        break;  // Return early if invalid
-                    }
+                for (int i = 1; i < strlen(token) - 1; i++) { // Start after the first quote and end before the last quote
+                    valueWithoutQuotes[index++] = token[i]; // Copy all characters, including '%'
                 }
-                if (valid) {
-                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Variable", token, lineNumber);
-                    appendToBuffer(buffer, temp);
-                }
+                valueWithoutQuotes[index] = '\0';  // Null-terminate the string
+
+                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "STRING_LITERAL", valueWithoutQuotes, lineNumber);
+                appendToBuffer(buffer, temp);
             } else if (isdigit(token[0])) { // Constant Value (Integer or Float)
                 size_t tokenLength = strlen(token);  // Calculate length once
                 int valid = 1;
@@ -716,24 +718,43 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                     if (token[i] == '.') {
                         if (hasDot) {  // More than one dot is invalid
                             valid = 0;
-                            break;
                         }
                         hasDot = 1;  // Mark that we found a dot
                     } else if (!isdigit(token[i])) {
+                        valid = 0;
+                    }
+                }
+
+                // Classify and handle tokens
+                if (valid) {
+                    if (hasDot) {
+                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "FLOAT_LITERAL", token, lineNumber);
+                    } else {
+                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "INTEGER_LITERAL", token, lineNumber);
+                    }
+                } else {
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "INVALID", token, lineNumber);
+                }
+                appendToBuffer(buffer, temp);
+            } else if (token[0] == '@' && islower(token[1])) { // Variable
+                size_t tokenLength = strlen(token);  // Calculate length once
+                int valid = 1;
+
+                // Check all characters after the first one
+                for (int i = 2; i < tokenLength; i++) {
+                    if (!isalnum(token[i]) && token[i] != '_') {
                         valid = 0;
                         break;  // Return early if invalid
                     }
                 }
 
-                // Classify token based on the presence of a dot
+                // Classify and handle tokens
                 if (valid) {
-                    if (hasDot) {
-                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Float Literal", token, lineNumber);
-                    } else {
-                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "Integer Literal", token, lineNumber);
-                    }
-                    appendToBuffer(buffer, temp);
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "VARIABLE", token, lineNumber);
+                } else {
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "INVALID", token, lineNumber);
                 }
+                appendToBuffer(buffer, temp);
             } else {
                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "INVALID", token, lineNumber);
                 appendToBuffer(buffer, temp);
@@ -750,10 +771,10 @@ void processLine(const char *line, int lineNumber, DynamicBuffer *buffer) {
     for (const char *ptr = line; *ptr; ptr++) {
         // Handle "//" line terminator delimiter
         if (*ptr == '/' && *(ptr + 1) == '/') {
-            char commentDelimiter[] = "//";
-            classifyAndAppend(commentDelimiter, lineNumber, buffer);
+            char delimiter[] = "//";
+            classifyAndAppend(delimiter, lineNumber, buffer);
             break; // Stop processing the rest of the line
-        }
+        } 
 
         switch (*ptr) {
             // Single-character operators and delimiters
@@ -767,7 +788,7 @@ void processLine(const char *line, int lineNumber, DynamicBuffer *buffer) {
                 }
 
                 // Handle two-character operators
-                if ((*ptr == '=' || *ptr == '!' || *ptr == '>' || *ptr == '<') && *(ptr + 1) == '=') {
+                else if ((*ptr == '=' || *ptr == '!' || *ptr == '>' || *ptr == '<') && *(ptr + 1) == '=' || *ptr == '/' && *(ptr + 1) == '<') {
                     char twoCharToken[3] = {*ptr, *(ptr + 1), '\0'};
                     classifyAndAppend(twoCharToken, lineNumber, buffer);
                     ptr++; // Skip next character
@@ -797,7 +818,7 @@ void processLine(const char *line, int lineNumber, DynamicBuffer *buffer) {
 }
 
 int main() {
-    const char *sourceFileName = "sample.leon";
+    const char *sourceFileName = "syntax_test.leon";
     FILE *sourceFile = fopen(sourceFileName, "r");
     if (!sourceFile) {
         fprintf(stderr, "Unable to open file: %s\n", sourceFileName);
@@ -835,7 +856,7 @@ int main() {
 
     freeBuffer(&buffer);
 
-    printf("Tokenization complete. Results saved to 'symbolTable.leon'.\n");
+    printf("Tokenization complete. Results saved to 'symbolTable1.leon'.\n");
 
     return EXIT_SUCCESS;
 }
