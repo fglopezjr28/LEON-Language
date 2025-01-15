@@ -109,36 +109,66 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
             appendToBuffer(buffer, temp);
             break;
 
-        // Check for 'and' and 'alt' as noise words
+        // Check for 'and' and 'alt'
         case 'a': // Handles words starting with 'a'
             switch (token[1]) {
-                case 'n': // Check for "and"
+                case 'n': // Check if the second character is 'n'
                     switch (token[2]) {
-                        case 'd':
-                            if (token[3] == '\0') { // End of string
-                                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                        "NOISE_WORD", "and", lineNumber);
-                                appendToBuffer(buffer, temp);
+                        case 'd': // Check if the third character is 'd'
+                            switch (token[3]) {
+                                case '\0': // End of string (exactly "and")
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "NOISE_WORD", "and", lineNumber);
+                                    appendToBuffer(buffer, temp);
+                                    break;
+                                default: // More characters after "and"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
+                                    break;
                             }
+                            break;
+                        default: // Third character is not 'd' (e.g., "anf")
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
                             break;
                     }
                     break;
 
-                case 'l': // Check for "alt"
+                case 'l': // Check if the second character is 'l' (for "alt")
                     switch (token[2]) {
-                        case 't':
-                            if (token[3] == '\0') { // End of string
-                                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                        "KEYWORD", "alt", lineNumber);
-                                appendToBuffer(buffer, temp);
+                        case 't': // Check if the third character is 't'
+                            switch (token[3]) {
+                                case '\0': // End of string (exactly "alt")
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "KEYWORD", "alt", lineNumber);
+                                    appendToBuffer(buffer, temp);
+                                    break;
+                                default: // More characters after "alt"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
+                                    break;
                             }
                             break;
+                        default: // Third character is not 't' (e.g., "alx")
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
+                            break;
                     }
+                    break;
+
+                default: // Second character is neither 'n' nor 'l'
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "INVALID", token, lineNumber);
+                    appendToBuffer(buffer, temp);
                     break;
             }
             break;
 
-        //Check for 'binar' and 'bind' as keywords
+        // Check for 'binar' and 'bind'
         case 'b': // Handles words starting with 'b'
             switch (token[1]) {
                 case 'i': // Check for "bi"
@@ -152,7 +182,16 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                         "KEYWORD", "binar", lineNumber);
                                                 appendToBuffer(buffer, temp);
+                                            } else { // Extra characters after "binar"
+                                                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                        "INVALID", token, lineNumber);
+                                                appendToBuffer(buffer, temp);
                                             }
+                                            break;
+                                        default: // Invalid after "bina"
+                                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                    "INVALID", token, lineNumber);
+                                            appendToBuffer(buffer, temp);
                                             break;
                                     }
                                     break;
@@ -162,16 +201,39 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                 "KEYWORD", "bind", lineNumber);
                                         appendToBuffer(buffer, temp);
+                                    } else { // Extra characters after "bind"
+                                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                "INVALID", token, lineNumber);
+                                        appendToBuffer(buffer, temp);
                                     }
+                                    break;
+
+                                default: // Invalid after "bin"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
                                     break;
                             }
                             break;
+
+                        default: // Invalid after "bi"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
+                            break;
                     }
+                    break;
+
+                default: // Invalid after 'b'
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "INVALID", token, lineNumber);
+                    appendToBuffer(buffer, temp);
                     break;
             }
             break;
 
-        //Check for 'const' and 'craft' as reserved word and keyword respectively
+
+        // Check for 'const' and 'craft'
         case 'c': // Handles words starting with 'c'
             switch (token[1]) {
                 case 'o': // Check for "co"
@@ -185,11 +247,30 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                         "RESERVED_WORD", "const", lineNumber);
                                                 appendToBuffer(buffer, temp);
+                                            } else { // Extra characters after "const"
+                                                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                        "INVALID", token, lineNumber);
+                                                appendToBuffer(buffer, temp);
                                             }
+                                            break;
+                                        default: // Invalid after "cons"
+                                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                    "INVALID", token, lineNumber);
+                                            appendToBuffer(buffer, temp);
                                             break;
                                     }
                                     break;
+                                default: // Invalid after "con"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
+                                    break;
                             }
+                            break;
+                        default: // Invalid after "co"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
                             break;
                     }
                     break;
@@ -205,17 +286,44 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                         "KEYWORD", "craft", lineNumber);
                                                 appendToBuffer(buffer, temp);
+                                            } else { // Extra characters after "craft"
+                                                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                        "INVALID", token, lineNumber);
+                                                appendToBuffer(buffer, temp);
                                             }
+                                            break;
+                                        default: // Invalid after "craf"
+                                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                    "INVALID", token, lineNumber);
+                                            appendToBuffer(buffer, temp);
                                             break;
                                     }
                                     break;
+                                default: // Invalid after "cra"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
+                                    break;
                             }
+                            break;
+                        default: // Invalid after "cr"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
                             break;
                     }
                     break;
+
+                default: // Invalid after "c"
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "INVALID", token, lineNumber);
+                    appendToBuffer(buffer, temp);
+                    break;
             }
             break;
-        case 'd': // Handles "d"
+
+        // Check for 'deca', 'disp', and 'duplus'
+        case 'd': // Handles words starting with 'd'
             switch (token[1]) {
                 case 'e': // Check for "de"
                     switch (token[2]) {
@@ -226,12 +334,27 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                 "KEYWORD", "deca", lineNumber);
                                         appendToBuffer(buffer, temp);
+                                    } else { // Extra characters after "deca"
+                                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                "INVALID", token, lineNumber);
+                                        appendToBuffer(buffer, temp);
                                     }
+                                    break;
+                                default: // Invalid after "dec"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
                                     break;
                             }
                             break;
+                        default: // Invalid after "de"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
+                            break;
                     }
                     break;
+
                 case 'i': // Check for "di"
                     switch (token[2]) {
                         case 's': // Check for "dis"
@@ -241,22 +364,29 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                 "KEYWORD", "disp", lineNumber);
                                         appendToBuffer(buffer, temp);
+                                    } else { // Extra characters after "disp"
+                                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                "INVALID", token, lineNumber);
+                                        appendToBuffer(buffer, temp);
                                     }
+                                    break;
+                                default: // Invalid after "dis"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
                                     break;
                             }
                             break;
+                        default: // Invalid after "di"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
+                            break;
                     }
                     break;
+
                 case 'u': // Check for "du"
                     switch (token[2]) {
-                        case 'm': // Check for "dum"
-                            if (token[3] == '\0') { // End of string confirms "dum"
-                                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                        "KEYWORD", "dum", lineNumber);
-                                appendToBuffer(buffer, temp);
-                            }
-                            break;
-
                         case 'p': // Check for "dup"
                             switch (token[3]) {
                                 case 'l': // Check for "dupl"
@@ -266,19 +396,57 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                         "KEYWORD", "duplus", lineNumber);
                                                 appendToBuffer(buffer, temp);
+                                            } else { // Extra characters after "duplus"
+                                                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                        "INVALID", token, lineNumber);
+                                                appendToBuffer(buffer, temp);
                                             }
+                                            break;
+                                        default: // Invalid after "dupl"
+                                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                    "INVALID", token, lineNumber);
+                                            appendToBuffer(buffer, temp);
                                             break;
                                     }
                                     break;
+                                default: // Invalid after "dup"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
+                                    break;
                             }
+                            break;
+
+                        case 'm': // Check for "dum"
+                            if (token[3] == '\0') { // End of string confirms "dum"
+                                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                        "KEYWORD", "dum", lineNumber);
+                                appendToBuffer(buffer, temp);
+                            } else { // Extra characters after "dum"
+                                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                        "INVALID", token, lineNumber);
+                                appendToBuffer(buffer, temp);
+                            }
+                            break;
+
+                        default: // Invalid after "du"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
                             break;
                     }
                     break;
+
+                default: // Invalid after "d"
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "INVALID", token, lineNumber);
+                    appendToBuffer(buffer, temp);
+                    break;
             }
             break;
-
         
-        case 'e': // Handles "e"
+        // Check for 'endo' and 'exec'
+        case 'e': // Handles words starting with 'e'
             switch (token[1]) {
                 case 'n': // Check for "en"
                     switch (token[2]) {
@@ -289,12 +457,27 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                 "KEYWORD", "endo", lineNumber);
                                         appendToBuffer(buffer, temp);
+                                    } else { // Extra characters after "endo"
+                                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                "INVALID", token, lineNumber);
+                                        appendToBuffer(buffer, temp);
                                     }
+                                    break;
+                                default: // Invalid after "end"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
                                     break;
                             }
                             break;
+                        default: // Invalid after "en"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
+                            break;
                     }
                     break;
+
                 case 'x': // Check for "ex"
                     switch (token[2]) {
                         case 'e': // Check for "exe"
@@ -304,15 +487,35 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                 "KEYWORD", "exec", lineNumber);
                                         appendToBuffer(buffer, temp);
+                                    } else { // Extra characters after "exec"
+                                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                "INVALID", token, lineNumber);
+                                        appendToBuffer(buffer, temp);
                                     }
                                     break;
+                                default: // Invalid after "exe"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
+                                    break;
                             }
+                            break;
+                        default: // Invalid after "ex"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
                             break;
                     }
                     break;
 
+                default: // Invalid after "e"
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "INVALID", token, lineNumber);
+                    appendToBuffer(buffer, temp);
+                    break;
             }
             break;
+        
         
         case 'f': // Handles "f"
             switch (token[1]) {
@@ -327,11 +530,30 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                         "RESERVED_WORD", "false", lineNumber);
                                                 appendToBuffer(buffer, temp);
+                                            } else { // Extra characters after "false"
+                                                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                        "INVALID", token, lineNumber);
+                                                appendToBuffer(buffer, temp);
                                             }
+                                            break;
+                                        default: // Invalid after "fals"
+                                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                    "INVALID", token, lineNumber);
+                                            appendToBuffer(buffer, temp);
                                             break;
                                     }
                                     break;
+                                default: // Invalid after "fal"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
+                                    break;
                             }
+                            break;
+                        default: // Invalid after "fa"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
                             break;
                     }
                     break;
@@ -346,11 +568,30 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                         "KEYWORD", "fetch", lineNumber);
                                                 appendToBuffer(buffer, temp);
+                                            } else { // Extra characters after "fetch"
+                                                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                        "INVALID", token, lineNumber);
+                                                appendToBuffer(buffer, temp);
                                             }
+                                            break;
+                                        default: // Invalid after "fetc"
+                                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                    "INVALID", token, lineNumber);
+                                            appendToBuffer(buffer, temp);
                                             break;
                                     }
                                     break;
+                                default: // Invalid after "fet"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
+                                    break;
                             }
+                            break;
+                        default: // Invalid after "fe"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
                             break;
                     }
                     break;
@@ -363,16 +604,34 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                 "KEYWORD", "flux", lineNumber);
                                         appendToBuffer(buffer, temp);
+                                    } else { // Extra characters after "flux"
+                                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                "INVALID", token, lineNumber);
+                                        appendToBuffer(buffer, temp);
                                     }
                                     break;
+                                default: // Invalid after "flu"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
+                                    break;
                             }
+                            break;
+                        default: // Invalid after "fl"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
                             break;
                     }
                     break;
                 case 'n': // Check for "fn"
                     switch (token[2]) {
                         case '_': // Check for "fn_"
-                            if (islower(token[3])) {
+                            if (token[3] == '\0') { // End of string confirms "fn_"
+                                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                        "INVALID", token, lineNumber);
+                                appendToBuffer(buffer, temp);
+                            } else if (islower(token[3])) {
                                 size_t tokenLength = strlen(token);  // Calculate length once
                                 int valid = 1;
 
@@ -386,8 +645,17 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                 if (valid) {
                                     snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "FUNCTION", token, lineNumber);
                                     appendToBuffer(buffer, temp);
+                                } else {
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
                                 }
+                                break;
                             }
+                            break;
+                        default: // Invalid after "fn"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
                             break;
                     }
                     break;
@@ -407,11 +675,30 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                         "KEYWORD", "formo", lineNumber);
                                                 appendToBuffer(buffer, temp);
+                                            } else { // Extra characters after "formo"
+                                                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                        "INVALID", token, lineNumber);
+                                                appendToBuffer(buffer, temp);
                                             }
+                                            break;
+                                        default: // Invalid after "form"
+                                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                    "INVALID", token, lineNumber);
+                                            appendToBuffer(buffer, temp);
                                             break;
                                     }
                                     break;
+                                default: // Invalid after "for"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
+                                    break;
                             }
+                            break;
+                        default: // Invalid after "fo"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
                             break;
                     }
                     break;
@@ -424,11 +711,30 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                 "NOISE_WORD", "from", lineNumber);
                                         appendToBuffer(buffer, temp);
+                                    } else { // Extra characters after "from"
+                                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                "INVALID", token, lineNumber);
+                                        appendToBuffer(buffer, temp);
                                     }
+                                    break;
+                                default: // Invalid after "fro"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
                                     break;
                             }
                             break;
+                        default: // Invalid after "fr"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
+                            break;
                     }
+                    break;
+                default: // Invalid after "f"  
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "INVALID", token, lineNumber);
+                    appendToBuffer(buffer, temp);
                     break;
             }
             break;
@@ -444,11 +750,30 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                 "RESERVED_WORD", "goto", lineNumber);
                                         appendToBuffer(buffer, temp);
+                                    } else { // Extra characters after "goto"
+                                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                "INVALID", token, lineNumber);
+                                        appendToBuffer(buffer, temp);
                                     }
+                                    break;
+                                default: // Invalid after "got"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
                                     break;
                             }
                             break;
+                        default: // Invalid after "go"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
+                            break;
                     }
+                    break;
+                default: // Invalid after "g"
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "INVALID", token, lineNumber);
+                    appendToBuffer(buffer, temp);
                     break;
             }
             break;
@@ -464,25 +789,68 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                 "RESERVED_WORD", "null", lineNumber);
                                         appendToBuffer(buffer, temp);
+                                    } else { // Extra characters after "null"
+                                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                "INVALID", token, lineNumber);
+                                        appendToBuffer(buffer, temp);
                                     }
+                                    break;
+                                default: // Invalid after "nul"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
                                     break;
                             }
                         case 'm': // Check for "num"
                             switch (token[3]) {
                                 case 'b': // Check for "numb"
-                                    if (token[4] == '\0') { // End of string confirms "numb"
-                                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                                                "KEYWORD", "numb", lineNumber);
-                                        appendToBuffer(buffer, temp);
+                                    switch (token[4]) {
+                                        case 'r': // Check for "numbr"
+                                            switch (token[5]) {
+                                                case 'a': // Check for "numbra"
+                                                    if (token[6] == '\0') { // End of string confirms "numbra"
+                                                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                                "KEYWORD", "numbra", lineNumber);
+                                                        appendToBuffer(buffer, temp);
+                                                    } else { // Extra characters after "numbra"
+                                                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                                "INVALID", token, lineNumber);
+                                                        appendToBuffer(buffer, temp);
+                                                    }
+                                                    break;
+                                                default: // Invalid after "numbr"
+                                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                            "INVALID", token, lineNumber);
+                                                    appendToBuffer(buffer, temp);
+                                                    break;
+                                            }
+                                            break;
+                                        default: // Invalid after "numb"
+                                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                    "INVALID", token, lineNumber);
+                                            appendToBuffer(buffer, temp);
+                                            break;
                                     }
+                                    break;
+                                default: // Invalid after "num"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    }
+                                    break;
+                                default: // Invalid after "nu"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
                                     break;
                             }
                             break;
+                        default: // Invalid after "n"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
+                            break;
                     }
-                    break;
-            }
-            break;
-                    
+                    break;     
         case 'o': // Handles "o"
             switch (token[1]) {
                 case 'p': // Check for "op"
@@ -492,9 +860,23 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                         "KEYWORD", "opt", lineNumber);
                                 appendToBuffer(buffer, temp);
+                            } else { // Extra characters after "opt"
+                                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                        "INVALID", token, lineNumber);
+                                appendToBuffer(buffer, temp);
                             }
                             break;
+                        default: // Invalid after "op"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
+                            break;
                     }
+                    break;
+                default: // Invalid after "o"
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "INVALID", token, lineNumber);
+                    appendToBuffer(buffer, temp);
                     break;
             }
             break;
@@ -508,9 +890,23 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                         "KEYWORD", "pro", lineNumber);
                                 appendToBuffer(buffer, temp);
+                            } else { // Extra characters after "pro"
+                                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                        "INVALID", token, lineNumber);
+                                appendToBuffer(buffer, temp);
                             }
                             break;
+                        default: // Invalid after "pr"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
+                            break;
                     }
+                    break;
+                default: // Invalid after "p"
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "INVALID", token, lineNumber);
+                    appendToBuffer(buffer, temp);
                     break;
             }
             break;
@@ -530,15 +926,44 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                                 "KEYWORD", "quando", lineNumber);
                                                         appendToBuffer(buffer, temp);
+                                                    } else { // Extra characters after "quando"
+                                                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                                "INVALID", token, lineNumber);
+                                                        appendToBuffer(buffer, temp);
                                                     }
+                                                    break;
+                                                default: // Invalid after "quand"
+                                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                            "INVALID", token, lineNumber);
+                                                    appendToBuffer(buffer, temp);
                                                     break;
                                             }
                                             break;
+                                        default: // Invalid after "quan"
+                                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                    "INVALID", token, lineNumber);
+                                            appendToBuffer(buffer, temp);
+                                            break;
                                     }
+                                    break;
+                                default: // Invalid after "qua"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
                                     break;
                             }
                             break;
+                        default: // Invalid after "qu"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
+                            break;
                     }
+                    break;
+                default: // Invalid after "q"
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "INVALID", token, lineNumber);
+                    appendToBuffer(buffer, temp);
                     break;
             }
             break;
@@ -552,7 +977,16 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                         "KEYWORD", "set", lineNumber);
                                 appendToBuffer(buffer, temp);
+                            } else { // Extra characters after "set"
+                                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                        "INVALID", token, lineNumber);
+                                appendToBuffer(buffer, temp);
                             }
+                            break;
+                        default: // Invalid after "se"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
                             break;
                     }
                     break;
@@ -567,11 +1001,30 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                         "KEYWORD", "signa", lineNumber);
                                                 appendToBuffer(buffer, temp);
+                                            } else { // Extra characters after "signa"
+                                                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                        "INVALID", token, lineNumber);
+                                                appendToBuffer(buffer, temp);
                                             }
+                                            break;
+                                        default: // Invalid after "sign"
+                                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                    "INVALID", token, lineNumber);
+                                            appendToBuffer(buffer, temp);
                                             break;
                                     }
                                     break;
+                                default: // Invalid after "sig"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
+                                    break;
                             }
+                            break;
+                        default: // Invalid after "si"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
                             break;
                     }
                     break;
@@ -588,15 +1041,44 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                                 "KEYWORD", "starto", lineNumber);
                                                         appendToBuffer(buffer, temp);
+                                                    } else { // Extra characters after "starto"
+                                                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                                "INVALID", token, lineNumber);
+                                                        appendToBuffer(buffer, temp);
                                                     }
+                                                    break;
+                                                default: // Invalid after "start"
+                                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                            "INVALID", token, lineNumber);
+                                                    appendToBuffer(buffer, temp);
                                                     break;
                                             }
                                             break;
+                                        default: // Invalid after "star"
+                                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                    "INVALID", token, lineNumber);
+                                            appendToBuffer(buffer, temp);
+                                            break;
                                     }
+                                    break;
+                                default: // Invalid after "sta"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
                                     break;
                             }
                             break;
+                        default: // Invalid after "st"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
+                            break;
                     }
+                    break;
+                default: // Invalid after "s"
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "INVALID", token, lineNumber);
+                    appendToBuffer(buffer, temp);
                     break;
             }
             break;
@@ -605,7 +1087,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
             switch (token[1]) {
                 case 'o': // Check for "to"
                     if (token[2] == '\0') { // End of string confirms "to"
-                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", 
                                 "NOISE_WORD", "to", lineNumber);
                         appendToBuffer(buffer, temp);
                     }
@@ -618,11 +1100,30 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                         snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                 "RESERVED_WORD", "true", lineNumber);
                                         appendToBuffer(buffer, temp);
+                                    } else { // Extra characters after "true"
+                                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                "INVALID", token, lineNumber);
+                                        appendToBuffer(buffer, temp);
                                     }
+                                    break;
+                                default: // Invalid after "tru"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
                                     break;
                             }
                             break;
+                        default: // Invalid after "tr"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
+                            break;
                     }
+                    break;
+                default: // Invalid after "t"
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "INVALID", token, lineNumber);
+                    appendToBuffer(buffer, temp);
                     break;
             }
             break;
@@ -640,9 +1141,23 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                         "KEYWORD", "unset", lineNumber);
                                                 appendToBuffer(buffer, temp);
+                                            } else { // Extra characters after "unset"
+                                                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                        "INVALID", token, lineNumber);
+                                                appendToBuffer(buffer, temp);
                                             }
                                             break;
+                                        default: // Invalid after "uns"
+                                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                    "INVALID", token, lineNumber);
+                                            appendToBuffer(buffer, temp);
+                                            break;
                                     }
+                                    break;
+                                default: // Invalid after "uns"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
                                     break;
                             }
                         case 't': // Check for "unt"
@@ -654,13 +1169,37 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                         "NOISE_WORD", "until", lineNumber);
                                                 appendToBuffer(buffer, temp);
+                                            } else { // Extra characters after "until"
+                                                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                        "INVALID", token, lineNumber);
+                                                appendToBuffer(buffer, temp);
                                             }
+                                            break;
+                                        default: // Invalid after "unti"
+                                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                    "INVALID", token, lineNumber);
+                                            appendToBuffer(buffer, temp);
                                             break;
                                     }
                                     break;
+                                default: // Invalid after "unt"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
+                                    break;
                             }
                             break;
+                        default: // Invalid after "un"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
+                            break;
                     }
+                    break;
+                default: // Invalid after "u"
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "INVALID", token, lineNumber);
+                    appendToBuffer(buffer, temp);
                     break;
             }
             break;
@@ -678,16 +1217,116 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                                                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
                                                         "KEYWORD", "yield", lineNumber);
                                                 appendToBuffer(buffer, temp);
+                                            } else { // Extra characters after "yield"
+                                                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                        "INVALID", token, lineNumber);
+                                                appendToBuffer(buffer, temp);
                                             }
+                                            break;
+                                        default: // Invalid after "yiel"
+                                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                                    "INVALID", token, lineNumber);
+                                            appendToBuffer(buffer, temp);
                                             break;
                                     }
                                     break;
+                                default: // Invalid after "yie"
+                                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                            "INVALID", token, lineNumber);
+                                    appendToBuffer(buffer, temp);
+                                    break;
                             }
+                            break;
+                        default: // Invalid after "yi"
+                            snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                    "INVALID", token, lineNumber);
+                            appendToBuffer(buffer, temp);
                             break;
                     }
                     break;
+                default: // Invalid after "y"
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "INVALID", token, lineNumber);
+                    appendToBuffer(buffer, temp);
+                    break;
             }
             break;
+        case '0': // Check for "0"
+            if (token[1] == '\0') { // Single "0" is valid
+                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                        "INTEGER_LITERAL", "0", lineNumber);
+                appendToBuffer(buffer, temp);
+            } else if (isdigit(token[1])) { // Check for leading zero with additional digits
+                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                        "INVALID", token, lineNumber);
+                appendToBuffer(buffer, temp);
+            } else if (token[1] == '.') { // Check for floats starting with "0."
+                size_t tokenLength = strlen(token);
+                int valid = 1;
+
+                for (int i = 2; i < tokenLength; i++) {
+                    if (!isdigit(token[i])) {
+                        valid = 0;
+                        break;
+                    }
+                }
+
+                if (valid) {
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "FLOAT_LITERAL", token, lineNumber);
+                } else {
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "INVALID", token, lineNumber);
+                }
+                appendToBuffer(buffer, temp);
+
+            } else { // Invalid token
+                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                        "INVALID", token, lineNumber);
+                appendToBuffer(buffer, temp);
+            }
+            break;
+
+        case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9': // Check for "1-9"
+            if (token[1] == '\0') { // Single-digit integers
+                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                        "INTEGER_LITERAL", token, lineNumber);
+                appendToBuffer(buffer, temp);
+            } else {
+                size_t tokenLength = strlen(token);
+                int valid = 1;
+                int hasDot = 0;
+
+                for (int i = 0; i < tokenLength; i++) {
+                    if (token[i] == '.') {
+                        if (hasDot) { // More than one dot is invalid
+                            valid = 0;
+                            break;
+                        }
+                        hasDot = 1; // Mark that we found a dot
+                    } else if (!isdigit(token[i])) {
+                        valid = 0;
+                        break;
+                    }
+                }
+
+                if (valid) {
+                    if (hasDot) { // It's a valid float literal
+                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                "FLOAT_LITERAL", token, lineNumber);
+                    } else { // It's an integer literal
+                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                                "INTEGER_LITERAL", token, lineNumber);
+                    }
+                } else {
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "INVALID", token, lineNumber);
+                }
+                appendToBuffer(buffer, temp);
+            }
+            break;
+
+
 
         default:
             if (token[0] == '\'' && token[strlen(token) - 1] == '\'') { // Character Literal
@@ -708,34 +1347,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
 
                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "STRING_LITERAL", valueWithoutQuotes, lineNumber);
                 appendToBuffer(buffer, temp);
-            } else if (isdigit(token[0])) { // Constant Value (Integer or Float)
-                size_t tokenLength = strlen(token);  // Calculate length once
-                int valid = 1;
-                int hasDot = 0;  // Flag to track if there's a dot
-
-                // Check all characters after the first one
-                for (int i = 1; i < tokenLength; i++) {
-                    if (token[i] == '.') {
-                        if (hasDot) {  // More than one dot is invalid
-                            valid = 0;
-                        }
-                        hasDot = 1;  // Mark that we found a dot
-                    } else if (!isdigit(token[i])) {
-                        valid = 0;
-                    }
-                }
-
-                // Classify and handle tokens
-                if (valid) {
-                    if (hasDot) {
-                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "FLOAT_LITERAL", token, lineNumber);
-                    } else {
-                        snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "INTEGER_LITERAL", token, lineNumber);
-                    }
-                } else {
-                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "INVALID", token, lineNumber);
-                }
-                appendToBuffer(buffer, temp);
+            
             } else if (token[0] == '@' && islower(token[1])) { // Variable
                 size_t tokenLength = strlen(token);  // Calculate length once
                 int valid = 1;
@@ -818,7 +1430,15 @@ void processLine(const char *line, int lineNumber, DynamicBuffer *buffer) {
 }
 
 int main() {
-    const char *sourceFileName = "syntax_test.leon";
+    const char *sourceFileName = "sample.leon";
+
+    //Check the last five characters of the file name as .leon
+    if (strlen(sourceFileName) < 5 || strcmp(sourceFileName + strlen(sourceFileName) - 5, ".leon") != 0) {
+        fprintf(stderr, "The file must have a '.leon' extension.\n");
+        return EXIT_FAILURE;
+    }
+
+    //Open file if valid
     FILE *sourceFile = fopen(sourceFileName, "r");
     if (!sourceFile) {
         fprintf(stderr, "Unable to open file: %s\n", sourceFileName);
