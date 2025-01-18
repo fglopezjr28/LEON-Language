@@ -1,0 +1,5 @@
+disp ( ) //
+disp ( "Your age is %d.", @age ) //
+disp ( "%c", @character ) //
+disp ( "My height and weight are %f meters and %f kilograms.", @height, @weight ) //
+disp ( "Please choose only from the options below." ) //
