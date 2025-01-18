@@ -36,6 +36,13 @@ const char* look_ahead(Token* tokens, int index) {
 
 //Input statement parser
 
+//Output statement parser
+void Output_Stmt(Token* tokens, int* index, int tokenCount) {
+    if (*index >= tokenCount) return;
+
+    // Check for the disp keyword 
+}
+
 
 // Assign statement parser
 void Assign_Stmt(Token* tokens, int* index, int tokenCount) {

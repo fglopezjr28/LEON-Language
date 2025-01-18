@@ -1,38 +1,35 @@
 +---------------------------+---------------------------+------------+
 | Token Type                | Lexeme                    | Line       |
 +---------------------------+---------------------------+------------+
-| VARIABLE                  | @age                      | 1          |
-| ASSIGNMENT_OP             | =                         | 1          |
-| INTEGER_LITERAL           | 1                         | 1          |
-| ARITHMETIC_OP             | +                         | 1          |
-| INTEGER_LITERAL           | 2                         | 1          |
-| ARITHMETIC_OP             | *                         | 1          |
-| INTEGER_LITERAL           | 3                         | 1          |
+| KEYWORD                   | disp                      | 1          |
+| DELIMETER                 | (                         | 1          |
+| DELIMETER                 | )                         | 1          |
 | LINE_TERMINATOR           | //                        | 1          |
+| KEYWORD                   | disp                      | 2          |
+| DELIMETER                 | (                         | 2          |
+| STRING_LITERAL            | Your age is %d.           | 2          |
+| DELIMETER                 | ,                         | 2          |
 | VARIABLE                  | @age                      | 2          |
-| ASSIGNMENT_OP             | =                         | 2          |
-| VARIABLE                  | @year                     | 2          |
+| DELIMETER                 | )                         | 2          |
 | LINE_TERMINATOR           | //                        | 2          |
-| VARIABLE                  | @age                      | 3          |
-| ASSIGNMENT_OP             | =                         | 3          |
-| INTEGER_LITERAL           | 21                        | 3          |
+| KEYWORD                   | disp                      | 3          |
+| DELIMETER                 | (                         | 3          |
+| FORMAT_SPECIFIER          | "%c"                      | 3          |
+| DELIMETER                 | ,                         | 3          |
+| VARIABLE                  | @character                | 3          |
+| DELIMETER                 | )                         | 3          |
 | LINE_TERMINATOR           | //                        | 3          |
-| VARIABLE                  | @age                      | 4          |
-| ASSIGNMENT_OP             | =                         | 4          |
-| VARIABLE                  | @year                     | 4          |
-| ARITHMETIC_OP             | -                         | 4          |
-| VARIABLE                  | @currYear                 | 4          |
+| KEYWORD                   | disp                      | 4          |
+| DELIMETER                 | (                         | 4          |
+| STRING_LITERAL            | My height and weight are %f meters and %f kilograms. | 4          |
+| DELIMETER                 | ,                         | 4          |
+| VARIABLE                  | @height                   | 4          |
+| VARIABLE                  | @weight                   | 4          |
+| DELIMETER                 | )                         | 4          |
 | LINE_TERMINATOR           | //                        | 4          |
-| KEYWORD                   | fetch                     | 6          |
-| DELIMETER                 | (                         | 6          |
-| FORMAT_SPECIFIER          | "%d"                      | 6          |
-| DELIMETER                 | ,                         | 6          |
-| VARIABLE                  | @age                      | 6          |
-| DELIMETER                 | )                         | 6          |
-| LINE_TERMINATOR           | //                        | 6          |
-| KEYWORD                   | fetch                     | 7          |
-| DELIMETER                 | (                         | 7          |
-| STRING_LITERAL            | Hello World               | 7          |
-| DELIMETER                 | )                         | 7          |
-| LINE_TERMINATOR           | //                        | 7          |
+| KEYWORD                   | disp                      | 5          |
+| DELIMETER                 | (                         | 5          |
+| STRING_LITERAL            | Please choose only from the options below. | 5          |
+| DELIMETER                 | )                         | 5          |
+| LINE_TERMINATOR           | //                        | 5          |
 +---------------------------+---------------------------+------------+
