@@ -1325,6 +1325,38 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                 appendToBuffer(buffer, temp);
             }
             break;
+        case '"': // Handle string literals and format specifiers
+            if (token[1] == '%') {
+                if (token[2] == 'd' || token[2] == 'f' || token[2] == 'c' || token[2] == 's' && token[3] == '"' && token[4] == '\0') {
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "FORMAT_SPECIFIER", token, lineNumber);
+                    appendToBuffer(buffer, temp);
+                } else {
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "INVALID", token, lineNumber);
+                    appendToBuffer(buffer, temp);
+                }
+            } else {
+                size_t tokenLength = strlen(token);
+                if (token[tokenLength - 1] == '"') {
+                    char valueWithoutQuotes[tokenLength - 1];
+                    int index = 0;
+
+                    for (int i = 1; i < tokenLength - 1; i++) {
+                        valueWithoutQuotes[index++] = token[i];
+                    }
+                    valueWithoutQuotes[index] = '\0';
+
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "STRING_LITERAL", valueWithoutQuotes, lineNumber);
+                    appendToBuffer(buffer, temp);
+                } else {
+                    snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
+                            "INVALID", token, lineNumber);
+                    appendToBuffer(buffer, temp);
+                }
+            }
+            break;
 
 
 
@@ -1335,19 +1367,6 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
 
                 snprintf(temp, sizeof(temp), "| %-25s | %-25c | %-10d |\n", "CHAR_LITERAL", characterValue, lineNumber);
                 appendToBuffer(buffer, temp);
-            } else if (token[0] == '"' && token[strlen(token) - 1] == '"') { // String Literal
-                // Remove the surrounding quotes
-                char valueWithoutQuotes[strlen(token) - 1];
-                int index = 0;
-
-                for (int i = 1; i < strlen(token) - 1; i++) { // Start after the first quote and end before the last quote
-                    valueWithoutQuotes[index++] = token[i]; // Copy all characters, including '%'
-                }
-                valueWithoutQuotes[index] = '\0';  // Null-terminate the string
-
-                snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "STRING_LITERAL", valueWithoutQuotes, lineNumber);
-                appendToBuffer(buffer, temp);
-            
             } else if (token[0] == '@' && islower(token[1])) { // Variable
                 size_t tokenLength = strlen(token);  // Calculate length once
                 int valid = 1;
@@ -1379,6 +1398,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
 void processLine(const char *line, int lineNumber, DynamicBuffer *buffer) {
     char token[256];
     int tokenIndex = 0;
+    int insideStringLiteral = 0;  // To track if we're inside a string literal
 
     for (const char *ptr = line; *ptr; ptr++) {
         // Handle "//" line terminator delimiter
@@ -1388,9 +1408,27 @@ void processLine(const char *line, int lineNumber, DynamicBuffer *buffer) {
             break; // Stop processing the rest of the line
         } 
 
+        // If inside a string literal, treat everything as part of the token
+        if (insideStringLiteral) {
+            token[tokenIndex++] = *ptr;  // Add the character to the token
+            if (*ptr == '"') {  // Check for closing quote
+                insideStringLiteral = 0;  // End of string literal
+                token[tokenIndex] = '\0';  // Null-terminate the string
+                classifyAndAppend(token, lineNumber, buffer);  // Process the token
+                tokenIndex = 0;  // Reset tokenIndex for the next token
+            }
+            continue;  // Skip the rest of the loop and continue reading inside the string literal
+        }
+
         switch (*ptr) {
+            // If we encounter a quote, start a string literal
+            case '"':
+                insideStringLiteral = 1;
+                token[tokenIndex++] = *ptr;  // Include the opening quote in the token
+                break;
+
             // Single-character operators and delimiters
-            case '+': case '-': case '*': case '/': case '%': case '^':
+            case '+': case '-': case '*': case '/': case '^':
             case '=': case '!': case '>': case '<':
             case '(': case ')': case '{': case '}': case '[': case ']': case ',':
                 if (tokenIndex > 0) {
@@ -1413,7 +1451,7 @@ void processLine(const char *line, int lineNumber, DynamicBuffer *buffer) {
             // Add characters to token
             default:
                 if (!isspace(*ptr)) {
-                    token[tokenIndex++] = *ptr;
+                    token[tokenIndex++] = *ptr;  // Add non-space characters to the token
                 } else if (tokenIndex > 0) {
                     token[tokenIndex] = '\0';
                     classifyAndAppend(token, lineNumber, buffer);
@@ -1423,6 +1461,7 @@ void processLine(const char *line, int lineNumber, DynamicBuffer *buffer) {
         }
     }
 
+    // If there's any remaining token, append it
     if (tokenIndex > 0) {
         token[tokenIndex] = '\0';
         classifyAndAppend(token, lineNumber, buffer);
@@ -1430,7 +1469,7 @@ void processLine(const char *line, int lineNumber, DynamicBuffer *buffer) {
 }
 
 int main() {
-    const char *sourceFileName = "sample.leon";
+    const char *sourceFileName = "ass_stmt.leon";
 
     //Check the last five characters of the file name as .leon
     if (strlen(sourceFileName) < 5 || strcmp(sourceFileName + strlen(sourceFileName) - 5, ".leon") != 0) {

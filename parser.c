@@ -29,56 +29,64 @@ int readTokens(FILE* file, Token* tokens) {
     return count;
 }
 
-// Function to validate <declaration_stmt>
-int validateDeclarationStmt(Token* tokens, int count, int* index) {
-    int i = *index;
+// Lookahead function to peek at the next token
+const char* look_ahead(Token* tokens, int index) {
+    return (index + 1 < MAX_TOKENS) ? tokens[index + 1].tokenType : NULL;
+}
 
-    // Check for <data_type>
-    if (i < count && (
-        strcmp(tokens[i].lexeme, "numbra") == 0 || 
-        strcmp(tokens[i].lexeme, "deca") == 0 ||
-        strcmp(tokens[i].lexeme, "duplos") == 0 ||
-        strcmp(tokens[i].lexeme, "signa") == 0 ||
-        strcmp(tokens[i].lexeme, "binar") == 0)) {
+//Input statement parser
 
-        i++; // Move to <var_list> or assignment
-        
-        // Check for VARIABLE
-        if (i < count && strcmp(tokens[i].tokenType, "VARIABLE") == 0) {
-            i++; // Move to optional '=' or ','
 
-            // Optional '=' assignment
-            if (i < count && strcmp(tokens[i].tokenType, "ASSIGNMENT_OP") == 0 && strcmp(tokens[i].lexeme, "=") == 0) {
-                i++; // Consume '='
+// Assign statement parser
+void Assign_Stmt(Token* tokens, int* index, int tokenCount) {
+    if (*index >= tokenCount) return;
 
-                // Check for VARIABLE on the right-hand side
-                if (i < count && strcmp(tokens[i].tokenType, "VARIABLE") == 0) {
-                    i++; // Assignment is valid; move to LINE_TERMINATOR
-                } else {
-                    return 0; // Invalid assignment if no VARIABLE follows '='
+    // Check for the VARIABLE token (e.g., @age)
+    if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
+        printf("(ASSIGNMENT_STATEMENT(VARIABLE: %s)", tokens[*index].lexeme); // Print VARIABLE
+        (*index)++;
+
+        // Check for the ASSIGNMENT_OP token (e.g., '=')
+        if (strcmp(tokens[*index].tokenType, "ASSIGNMENT_OP") == 0) {
+            printf("(ASSIGNMENT_OP: %s)", tokens[*index].lexeme); // Print ASSIGNMENT_OP
+            (*index)++;
+
+            // Handle the right-hand side of the assignment
+            while (*index < tokenCount && 
+                   (strcmp(tokens[*index].tokenType, "VARIABLE") == 0 ||
+                    strcmp(tokens[*index].tokenType, "INTEGER_LITERAL") == 0 ||
+                    strcmp(tokens[*index].tokenType, "FLOAT_LITERAL") == 0 ||
+                    strcmp(tokens[*index].tokenType, "ARITHMETIC_OP") == 0)) {
+
+                // Handle literals, variables, and operators
+                if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
+                    printf("(VARIABLE: %s)", tokens[*index].lexeme); // Print VARIABLE (right-hand side)
+                    (*index)++;
+                } else if (strcmp(tokens[*index].tokenType, "INTEGER_LITERAL") == 0) {
+                    printf("(INT_LITERAL: %s)", tokens[*index].lexeme); // Print INTEGER_LITERAL
+                    (*index)++;
+                } else if (strcmp(tokens[*index].tokenType, "FLOAT_LITERAL") == 0) {
+                    printf("(FLOAT_LITERAL: %s)", tokens[*index].lexeme); // Print FLOAT_LITERAL
+                    (*index)++;
+                } else if (strcmp(tokens[*index].tokenType, "ARITHMETIC_OP") == 0) {
+                    printf("(ARITHMETIC_OP: %s)", tokens[*index].lexeme); // Print ARITHMETIC_OP
+                    (*index)++;
                 }
             }
 
-            // Handle optional ',' <var_list>
-            while (i < count && strcmp(tokens[i].tokenType, "DELIMETER") == 0 && strcmp(tokens[i].lexeme, ",") == 0) {
-                i++; // Consume ','
-
-                if (i < count && strcmp(tokens[i].tokenType, "VARIABLE") == 0) {
-                    i++; // Move to next token
-                } else {
-                    return 0; // Invalid if no VARIABLE follows the ','
-                }
+            // Check for the LINE_TERMINATOR token (e.g., "//")
+            if (*index < tokenCount && strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0) {
+                printf("(LINE_TERMINATOR: %s))\n", tokens[*index].lexeme); // Print LINE_TERMINATOR and close the statement
+                (*index)++;
+            } else {
+                printf("Error: Expected line terminator (//)\n");
             }
-
-            // Check for LINE_TERMINATOR
-            if (i < count && strcmp(tokens[i].tokenType, "LINE_TERMINATOR") == 0) {
-                *index = i + 1;
-                return 1; // Valid <declaration_stmt>
-            }
+        } else {
+            printf("Error: Expected assignment operator (=)\n");
         }
+    } else {
+        printf("Error: Expected a variable\n");
     }
-
-    return 0; // Invalid
 }
 
 int main() {
@@ -94,10 +102,8 @@ int main() {
 
     int index = 0;
 
-    if (validateDeclarationStmt(tokens, tokenCount, &index)) {
-        printf("Valid <declaration_stmt>\n");
-    } else {
-        printf("Input does not match <declaration_stmt>\n");
+    while (index < tokenCount) {
+        Assign_Stmt(tokens, &index, tokenCount);
     }
 
     return 0;

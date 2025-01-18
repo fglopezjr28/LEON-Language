@@ -1,0 +1,7 @@
+@age = 1 + 2 * 3 //
+@age = @year //
+@age = 21 //
+@age = @year - @currYear //
+
+fetch ( "%d" , @age ) //
+fetch ( "Hello World" ) //
