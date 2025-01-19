@@ -30,9 +30,4 @@
 | VARIABLE                  | @age                      | 6          |
 | DELIMETER                 | )                         | 6          |
 | LINE_TERMINATOR           | //                        | 6          |
-| KEYWORD                   | fetch                     | 7          |
-| DELIMETER                 | (                         | 7          |
-| STRING_LITERAL            | Hello World               | 7          |
-| DELIMETER                 | )                         | 7          |
-| LINE_TERMINATOR           | //                        | 7          |
 +---------------------------+---------------------------+------------+

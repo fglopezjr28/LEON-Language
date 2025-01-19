@@ -4,4 +4,3 @@
 @age = @year - @currYear //
 
 fetch ( "%d" , @age ) //
-fetch ( "Hello World" ) //
