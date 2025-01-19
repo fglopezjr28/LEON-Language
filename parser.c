@@ -50,13 +50,19 @@ void Output_Stmt(Token* tokens, int* index, int tokenCount) {
             printf("(DELIMITER: %s)", tokens[*index].lexeme); // Print DELIMITER
             (*index)++;
 
+            int hasFormatSpecifier = 0;
+
             // Handle the arguments inside the parentheses before comma
             while (*index < tokenCount && strcmp(tokens[*index].tokenType, "DELIMITER") != 0) {
                 if (strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0) {
                     printf("(STRING_LITERAL: %s)", tokens[*index].lexeme); // Print STRING_LITERAL
+                    if (strstr(tokens[*index].lexeme, "%") != NULL) {
+                        hasFormatSpecifier = 1;
+                    }
                     (*index)++;
                 } else if (strcmp(tokens[*index].tokenType, "FORMAT_SPECIFIER") == 0) {
                     printf("(FORMAT_SPECIFIER: %s)", tokens[*index].lexeme); // Print FORMAT_SPECIFIER
+                    hasFormatSpecifier = 1;
                     (*index)++;
                 } else {
                     printf("Error: Expected a string literal or format specifier\n");
@@ -64,37 +70,44 @@ void Output_Stmt(Token* tokens, int* index, int tokenCount) {
                 }
             }
 
-            // Check for the DELIMETER token (must be ',')
-            if (strcmp(tokens[*index].tokenType, "DELIMITER") == 0 && strcmp(tokens[*index].lexeme, ",") == 0) {
-                printf("(DELIMITER: %s)", tokens[*index].lexeme); // Print DELIMITER
-                (*index)++;
-
-                // Handle the arguments inside the parentheses after comma
-                int expectVariable = 1;
-                while (*index < tokenCount && strcmp(tokens[*index].tokenType, "DELIMITER") != 0) {
-                    if (expectVariable && strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
-                        printf("(VARIABLE: %s)", tokens[*index].lexeme); // Print VARIABLE
-                        (*index)++;
-                        expectVariable = 0;
-                    } else if (!expectVariable && strcmp(tokens[*index].tokenType, "DELIMITER") == 0 && strcmp(tokens[*index].lexeme, ",") == 0) {
-                        printf("(DELIMITER: %s)", tokens[*index].lexeme); // Print DELIMITER (comma)
-                        (*index)++;
-                        expectVariable = 1;
-                    } else {
-                        printf("Error: Unexpected token after comma\n");
+            // Check for the DELIMETER token (must be ',' or ')')
+            if (strcmp(tokens[*index].tokenType, "DELIMITER") == 0 && (strcmp(tokens[*index].lexeme, ",") == 0 || strcmp(tokens[*index].lexeme, ")") == 0)) {
+                if (strcmp(tokens[*index].lexeme, ",") == 0) {
+                    if (!hasFormatSpecifier) {
+                        printf("Error: Comma and variable not allowed without format specifier\n");
                         return;
+                    }        
+                    printf("(DELIMITER: %s)", tokens[*index].lexeme); // Print DELIMITER
+                    (*index)++;
+
+                    // Handle the arguments inside the parentheses after comma
+                    int expectVariable = 1;
+                    while (*index < tokenCount && strcmp(tokens[*index].tokenType, "DELIMITER") != 0) {
+                        if (expectVariable && strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
+                            printf("(VARIABLE: %s)", tokens[*index].lexeme); // Print VARIABLE
+                            (*index)++;
+                            expectVariable = 0;
+                        } else if (!expectVariable && strcmp(tokens[*index].tokenType, "DELIMITER") == 0 && strcmp(tokens[*index].lexeme, ",") == 0) {
+                            printf("(DELIMITER: %s)", tokens[*index].lexeme); // Print DELIMITER (comma)
+                            (*index)++;
+                            expectVariable = 1;
+                        } else {
+                            printf("Error: Expected a variable or comma\n");
+                            return;
+                        }
                     }
                 }
-            } else {
-                printf("Error: Expected comma ','\n");
-            }
 
-            // Check for the DELIMITER token (must be ')')
-            if (strcmp(tokens[*index].tokenType, "DELIMITER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
-                printf("(DELIMITER: %s))\n", tokens[*index].lexeme); // Print DELIMITER and close the statement
-                (*index)++;
+                // Check for the DELIMITER token (must be ')')
+                if (strcmp(tokens[*index].tokenType, "DELIMITER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
+                    printf("(DELIMITER: %s))\n", tokens[*index].lexeme); // Print DELIMITER and close the statement
+                    (*index)++;
+                } else {
+                    printf("Error: Expected closing parenthesis ')'\n");
+                    return;
+                }
             } else {
-                printf("Error: Expected closing parenthesis ')'\n");
+                printf("Error: Expected comma ',' or closing parenthesis ')'\n");
                 return;
             }
 
