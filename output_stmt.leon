@@ -1,5 +1,12 @@
 disp ( ) //
-disp ( "Your age is %d.", @age ) //
-disp ( "%c", @character ) //
-disp ( "My height and weight are %f meters and %f kilograms.", @height, @weight ) //
-disp ( "Please choose only from the options below." ) //
+disp ( "Hello!" ) //
+disp ( "Value %d." , @age ) //
+disp ( "%c" , @character ) //
+disp ( "Value is %f and %f." , @height , @weight ) //
+
+@age = 1 + 2 * 3 //
+@age = @year //
+@age = 21 //
+@age = @year - @currYear //
+
+fetch ( "%d" , @age ) //
