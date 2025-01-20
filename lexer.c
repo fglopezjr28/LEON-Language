@@ -1348,7 +1348,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                     valueWithoutQuotes[index] = '\0';
 
                     snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",
-                            "STRING_LITERAL", valueWithoutQuotes, lineNumber);
+                            "STRING_LITERAL", token, lineNumber);
                     appendToBuffer(buffer, temp);
                 } else {
                     snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n",

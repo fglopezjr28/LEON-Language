@@ -68,6 +68,79 @@ int processCommaAndExpectVariable(Token* tokens, int* index, int tokenCount) {
     return 0; // No comma found
 }
 
+// Conditional Statement parser
+
+
+// Declaration Statement parser
+void Declaration_Stmt(Token* tokens, int* index, int tokenCount) {
+    if (*index >= tokenCount) return;   
+
+    // Check for KEYWORD token (data type)
+    if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && 
+        strcmp(tokens[*index].lexeme, "numbra") == 0 ||
+        strcmp(tokens[*index].lexeme, "deca") == 0 || 
+        strcmp(tokens[*index].lexeme, "duplus") == 0 || 
+        strcmp(tokens[*index].lexeme, "signa") == 0 ||
+        strcmp(tokens[*index].lexeme, "binar") == 0) {
+        printf("(DECLARATION_STATEMENT(KEYWORD(Data Type): %s)", tokens[*index].lexeme); // Print KEYWORD (data type)
+        (*index)++;
+
+        // Check for ( data_type VARIABLE
+        if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
+            printf("(VARIABLE: %s)", tokens[*index].lexeme); // Print VARIABLE
+            (*index)++;
+
+            // Check for ( data_type VARIABLE // )
+            if (*index < tokenCount && strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0) {
+                printf("(LINE_TERMINATOR: %s))\n", tokens[*index].lexeme); // Print LINE_TERMINATOR
+                (*index)++;
+            // Check for ( data_type VARIABLE, VARIABLE, VARIABLE // )
+            } else if (processCommaAndExpectVariable(tokens, index, tokenCount)) {
+                    
+                    if (*index < tokenCount && strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0) {
+                        printf("(LINE_TERMINATOR: %s))\n", tokens[*index].lexeme); // Print LINE_TERMINATOR
+                        (*index)++;
+                    } else {
+                        printf("Error: Expected line terminator (//)\n");
+                    }
+            // Check for ( data_type VARIABLE =   
+            } else if (*index < tokenCount && strcmp(tokens[*index].tokenType, "ASSIGNMENT_OP") == 0) {
+                 printf("(ASSIGNMENT_OP: %s)", tokens[*index].lexeme);
+                 (*index)++;
+
+                 // Check for ( data_type VARIABLE =  init_value
+                 if (*index < tokenCount && strcmp(tokens[*index].tokenType, "INTEGER_LITERAL") == 0 ||
+                     strcmp(tokens[*index].tokenType, "FLOAT_LITERAL") == 0 || 
+                     strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0 || 
+                     strcmp(tokens[*index].tokenType, "CHAR_LITERAL") == 0 ) {
+                    printf("(%s: %s)", tokens[*index].tokenType, tokens[*index].lexeme); // Print init_value
+                    (*index)++;
+
+                    // Check for ( data_type VARIABLE =  init_value // )
+                    if (*index < tokenCount && strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0) {
+                        printf("(LINE_TERMINATOR: %s))\n", tokens[*index].lexeme); // Print LINE_TERMINATOR
+                        (*index)++;
+                    } else {
+                        printf("Error: Expected line terminator (//)\n");
+                    }
+                 } else {
+                     printf("Error: Expected init_value\n");
+                 }
+            // Check for datatype variable //
+            } else if (*index < tokenCount && strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0) {
+                printf("(LINE_TERMINATOR: %s))\n", tokens[*index].lexeme); // Print LINE_TERMINATOR
+                (*index)++;
+            } else {
+                printf("Error: Expected line terminator (//)\n");
+            }
+        } else {\
+            printf("Error: Expected variable\n");
+        }
+    } else {
+        printf("Error: Expected data type keyword\n");
+    }
+
+}
 // Input statement parser
 void Input_Stmt(Token* tokens, int* index, int tokenCount) {
     if (*index >= tokenCount) return;
@@ -113,7 +186,7 @@ void Input_Stmt(Token* tokens, int* index, int tokenCount) {
         }
     } else {
         printf("Error: Expected input keyword 'fetch'\n");
-    }
+    }   
 }
 
 // Output statement parser
@@ -174,6 +247,7 @@ void Output_Stmt(Token* tokens, int* index, int tokenCount) {
         printf("Error: Expected keyword 'disp'\n");
     }
 }
+
 
 // Assign statement parser
 void Assign_Stmt(Token* tokens, int* index, int tokenCount) {
@@ -242,7 +316,15 @@ int main() {
 
     while (index < tokenCount) {
         // Determine which statement to parse based on the token type
-        if (strcmp(tokens[index].tokenType, "VARIABLE") == 0) {
+        if (strcmp(tokens[index].tokenType, "KEYWORD") == 0 && 
+            strcmp(tokens[index].lexeme, "numbra") == 0 ||
+            strcmp(tokens[index].lexeme, "deca") == 0 || 
+            strcmp(tokens[index].lexeme, "duplus") == 0 || 
+            strcmp(tokens[index].lexeme, "signa") == 0 ||
+            strcmp(tokens[index].lexeme, "binar") == 0 ) {
+            // "numbra", "deca", "duplus", "signa", "binar" keywords indicate the start of a declaration statement
+            Declaration_Stmt(tokens, &index, tokenCount);
+        } else if (strcmp(tokens[index].tokenType, "VARIABLE") == 0) {
             // Variables indicate the start of an assignment statement
             Assign_Stmt(tokens, &index, tokenCount);
         } else if (strcmp(tokens[index].tokenType, "KEYWORD") == 0 && strcmp(tokens[index].lexeme, "disp") == 0) {

@@ -1,7 +1,7 @@
 disp ( ) //
 disp ( "Hello!" ) //
-disp ( "Value %d." , @age ) //
 disp ( "%c" , @character ) //
+disp ( "Value_%d", @age ) //
 disp ( "Value is %f and %f." , @height , @weight ) //
 
 @age = 1 + 2 * 3 //
@@ -10,3 +10,7 @@ disp ( "Value is %f and %f." , @height , @weight ) //
 @age = @year - @currYear //
 
 fetch ( "%d" , @age ) //
+
+numbra @age //
+deca @height , @weight, @BMI //
+numbra @age = 26 //

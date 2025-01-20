@@ -7,26 +7,26 @@
 | LINE_TERMINATOR           | //                        | 1          |
 | KEYWORD                   | disp                      | 2          |
 | DELIMETER                 | (                         | 2          |
-| STRING_LITERAL            | Hello!                    | 2          |
+| STRING_LITERAL            | "Hello!"                  | 2          |
 | DELIMETER                 | )                         | 2          |
 | LINE_TERMINATOR           | //                        | 2          |
 | KEYWORD                   | disp                      | 3          |
 | DELIMETER                 | (                         | 3          |
-| STRING_LITERAL            | Value %d.                 | 3          |
+| FORMAT_SPECIFIER          | "%c"                      | 3          |
 | DELIMETER                 | ,                         | 3          |
-| VARIABLE                  | @age                      | 3          |
+| VARIABLE                  | @character                | 3          |
 | DELIMETER                 | )                         | 3          |
 | LINE_TERMINATOR           | //                        | 3          |
 | KEYWORD                   | disp                      | 4          |
 | DELIMETER                 | (                         | 4          |
-| FORMAT_SPECIFIER          | "%c"                      | 4          |
+| STRING_LITERAL            | "Value_%d"                | 4          |
 | DELIMETER                 | ,                         | 4          |
-| VARIABLE                  | @character                | 4          |
+| VARIABLE                  | @age                      | 4          |
 | DELIMETER                 | )                         | 4          |
 | LINE_TERMINATOR           | //                        | 4          |
 | KEYWORD                   | disp                      | 5          |
 | DELIMETER                 | (                         | 5          |
-| STRING_LITERAL            | Value is %f and %f.       | 5          |
+| STRING_LITERAL            | "Value is %f and %f."     | 5          |
 | DELIMETER                 | ,                         | 5          |
 | VARIABLE                  | @height                   | 5          |
 | DELIMETER                 | ,                         | 5          |
@@ -62,4 +62,18 @@
 | VARIABLE                  | @age                      | 12         |
 | DELIMETER                 | )                         | 12         |
 | LINE_TERMINATOR           | //                        | 12         |
+| KEYWORD                   | numbra                    | 14         |
+| VARIABLE                  | @age                      | 14         |
+| LINE_TERMINATOR           | //                        | 14         |
+| KEYWORD                   | deca                      | 15         |
+| VARIABLE                  | @height                   | 15         |
+| DELIMETER                 | ,                         | 15         |
+| VARIABLE                  | @weight                   | 15         |
+| INVALID                   | @BMI                      | 15         |
+| LINE_TERMINATOR           | //                        | 15         |
+| KEYWORD                   | numbra                    | 16         |
+| VARIABLE                  | @age                      | 16         |
+| ASSIGNMENT_OP             | =                         | 16         |
+| INTEGER_LITERAL           | 26                        | 16         |
+| LINE_TERMINATOR           | //                        | 16         |
 +---------------------------+---------------------------+------------+
