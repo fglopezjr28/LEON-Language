@@ -68,6 +68,12 @@ int processCommaAndExpectVariable(Token* tokens, int* index, int tokenCount) {
     return 0; // No comma found
 }
 
+// Iterartive Statement parser
+    //  for_statement 
+    // while_statement 
+    // do_while_statement
+
+
 // Conditional Statement parser
 
 void Conditional_Stmt(Token* tokens, int* index, int tokenCount) {
