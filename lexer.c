@@ -100,7 +100,7 @@ void classifyAndAppend(const char *token, int lineNumber, DynamicBuffer *buffer)
                 snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "ARITHMETIC_OP", "/", lineNumber);
                 appendToBuffer(buffer, temp);
             break;
-        case '(': case ')': case '{': case '}': case '[': case ']': case ',': // Delimiters
+        case '(': case ')': case '{': case '}': case '[': case ']': case ',': case ';': // Delimiters
             snprintf(temp, sizeof(temp), "| %-25s | %-25s | %-10d |\n", "DELIMETER", token, lineNumber);
             appendToBuffer(buffer, temp);
             break;
@@ -1430,7 +1430,7 @@ void processLine(const char *line, int lineNumber, DynamicBuffer *buffer) {
             // Single-character operators and delimiters
             case '+': case '-': case '*': case '/': case '^':
             case '=': case '!': case '>': case '<':
-            case '(': case ')': case '{': case '}': case '[': case ']': case ',':
+            case '(': case ')': case '{': case '}': case '[': case ']': case ',' : case':':
                 if (tokenIndex > 0) {
                     token[tokenIndex] = '\0';
                     classifyAndAppend(token, lineNumber, buffer);
