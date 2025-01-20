@@ -12,5 +12,10 @@ disp ( "Value is %f and %f." , @height , @weight ) //
 fetch ( "%d" , @age ) //
 
 numbra @age //
-deca @height , @weight, @BMI //
+deca @height , @weight , @bMI , @next //
 numbra @age = 26 //
+numbra @score = 95 , @passingScore , @failingScore //
+numbra @value , @vad = 95 , @fer , @gre //
+numbra @value , @vad , @fer = 76 , @gre //
+numbra @value , @vad , @fer , @gre = 56 //
+numbra @value , @vad , @fer , @gre , @score = 95 , @passingScore , @failingScore //
