@@ -69,334 +69,802 @@ int processCommaAndExpectVariable(Token* tokens, int* index, int tokenCount) {
 }
 
 // Iterartive Statement parser
-    //  for_statement 
-    // while_statement 
-    // do_while_statement
-
-
-// Conditional Statement parser
-
-void Conditional_Stmt(Token* tokens, int* index, int tokenCount) {
+void Iterative_Stmt(Token* tokens, int* index, int tokenCount) {
     if (*index >= tokenCount) return;
 
-     // Check for the INPUT_KEYWORD token (e.g., 'quando')
-        if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "quando") == 0) {
-            printf("(CONDITIONAL_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print CONDITIONAL_KEYWORD
+    //  for_statement Check for the KEYWORD token (must be "pro")
+    if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "pro") == 0) {
+        printf("(ITERATIVE_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print pro
+        (*index)++;
+
+        // Check for opening parenthesis 'pro ('
+        if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
+            printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
             (*index)++;
 
-            // Check for opening parenthesis '('
-            if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
-                printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
+            // Check for opening parenthesis 'pro ( data_type'
+            if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "numbra") == 0 ||
+                strcmp(tokens[*index].lexeme, "deca") == 0 || 
+                strcmp(tokens[*index].lexeme, "duplus") == 0 || 
+                strcmp(tokens[*index].lexeme, "signa") == 0 ||
+                strcmp(tokens[*index].lexeme, "binar") == 0) {
+                printf("(KEYWORD: %s)", tokens[*index].lexeme); // Print data_type
                 (*index)++;
 
-                // Expect a variable
+                // Check for variable 'pro ( data_type variable'
                 if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
                     printf("(VARIABLE: %s)", tokens[*index].lexeme); // Print variable
                     (*index)++;
 
-                     // Expect Relational OP
-
-                    if (strcmp(tokens[*index].tokenType, "RELATIONAL_OP") == 0) {
-                        printf("(RELATIONAL_OP: %s)", tokens[*index].lexeme); // Print variable
+                    // Check for assignment operator 'pro ( data_type variable ='
+                    if (strcmp(tokens[*index].tokenType, "ASSIGNMENT_OP") == 0 && strcmp(tokens[*index].lexeme, "=") == 0) {
+                        printf("(ASSIGNMENT_OP: %s)", tokens[*index].lexeme); // Print assignment operator
                         (*index)++;
 
-                        // Check for init value
-                        if (*index < tokenCount && strcmp(tokens[*index].tokenType, "INTEGER_LITERAL") == 0 ||
+                        // Check for INTEGER_LITERAL token 'pro ( data_type variable = INTEGER_LITERAL'
+                        if (strcmp(tokens[*index].tokenType, "INTEGER_LITERAL") == 0) {
+                            printf("(INTEGER_LITERAL: %s)", tokens[*index].lexeme); // Print INTEGER_LITERAL
+                            (*index)++;
+
+                            // Check for semicolon 'pro ( data_type variable = INTEGER_LITERAL ;'
+                             if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ";") == 0) {
+                                printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print semicolon
+                                (*index)++;
+
+                                // Check for variable 'pro ( data_type variable = INTEGER_LITERAL ; variable'
+                                if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
+                                    printf("(VARIABLE: %s)", tokens[*index].lexeme); // Print variable
+                                    (*index)++;
+
+                                    // Check for relational operator 'pro ( data_type variable = INTEGER_LITERAL ; variable relational_op'
+                                    if (strcmp(tokens[*index].tokenType, "RELATIONAL_OP") == 0) {
+                                        printf("(RELATIONAL_OP: %s)", tokens[*index].lexeme); // Print relational operator
+                                        (*index)++;
+
+                                        // Check for INTEGER_LITERAL token 'pro ( data_type variable = INTEGER_LITERAL ; variable relational_op INTEGER_LITERAL'
+                                        if (strcmp(tokens[*index].tokenType, "INTEGER_LITERAL") == 0) {
+                                            printf("(INTEGER_LITERAL: %s)", tokens[*index].lexeme); // Print INTEGER_LITERAL
+                                            (*index)++;
+
+                                            // Check for semicolon 'pro ( data_type variable = INTEGER_LITERAL ;'
+                                            if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ";") == 0) {
+                                                printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print semicolon
+                                                (*index)++;
+
+                                                // Check for variable 'pro ( data_type variable = INTEGER_LITERAL ; variable'
+                                                if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
+                                                    printf("(VARIABLE: %s)", tokens[*index].lexeme); // Print variable
+                                                    (*index)++;
+
+                                                    // Check for relational operator 'pro ( data_type variable = INTEGER_LITERAL ; variable +'
+                                                    if (strcmp(tokens[*index].tokenType, "ARITHMETIC_OP") == 0) {
+                                                        printf("(ARITHMETIC_OP: %s)", tokens[*index].lexeme); // Print arithmetic operator
+                                                        (*index)++;
+
+                                                        // Check for relational operator 'pro ( data_type variable = INTEGER_LITERAL ; variable ++'
+                                                        if (strcmp(tokens[*index].tokenType, "ARITHMETIC_OP") == 0) {
+                                                            printf("(ARITHMETIC_OP: %s)", tokens[*index].lexeme); // Print arithmetic operator
+                                                            (*index)++;
+
+                                                            // Check for delimeter 'pro ( data_type variable = INTEGER_LITERAL ; variable ++ )'
+                                                            if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
+                                                                printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
+                                                                (*index)++;
+
+                                                                // Check for opening curly braces 'pro ( data_type variable = INTEGER_LITERAL ; variable ++ ) {'
+                                                                if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "{") == 0) {
+                                                                    printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening curly braces
+                                                                    (*index)++;
+
+                                                                    // Check for the KEYWORD token (must be "disp") 'pro ( data_type variable = INTEGER_LITERAL ; variable ++ ) { disp'
+                                                                    if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "disp") == 0) {
+                                                                        printf("(OUTPUT_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print KEYWORD
+                                                                        (*index)++;
+
+                                                                        // Check for opening parenthesis  'pro ( data_type variable = INTEGER_LITERAL ; variable ++ ) { disp ('
+                                                                        if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
+                                                                            printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
+                                                                            (*index)++;
+
+                                                                            // Handle STRING_LITERAL token 'pro ( data_type variable = INTEGER_LITERAL ; variable ++ ) { disp (string_literal'
+                                                                            if (*index < tokenCount && strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0) {
+                                                                                printf("(STRING_LITERAL: %s)", tokens[*index].lexeme); // Print STRING_LITERAL
+                                                                                (*index)++;
+
+                                                                                // Check for closing parenthesis 'pro ( data_type variable = INTEGER_LITERAL ; variable ++ ) { disp (string_literal) //'
+                                                                                if (*index < tokenCount && strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0) {
+                                                                                    printf("(LINE_TERMINATOR: %s)", tokens[*index].lexeme); // Print LINE_TERMINATOR
+                                                                                    (*index)++;
+
+                                                                                    // Check for closing curly braces 'pro ( data_type variable = INTEGER_LITERAL ; variable ++ ) { disp (string_literal) // }'
+                                                                                    if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "}") == 0) {
+                                                                                        printf("(DELIMETER: %s))\n", tokens[*index].lexeme); // Print closing curly braces
+                                                                                        (*index)++;
+                                                                                    } else { 
+                                                                                        printf("Error: Expected closing curly braces '}'\n");
+                                                                                    }
+                                                                                } else {
+                                                                                    printf("Error: Expected line terminator (//)\n");
+                                                                                }
+                                                                            } else {
+                                                                                printf("Error: Expected string literal\n");
+                                                                            }
+                                                                        } else {
+                                                                            printf("Error: Expected opening parenthesis '('\n");
+                                                                        }
+                                                                    } else {
+                                                                        printf("Error: Expected output keyword 'disp'\n");
+                                                                    }
+                                                                } else {
+                                                                    printf("Error: Expected opening curly braces '{'\n");
+                                                                }
+                                                            } else {
+                                                                printf("Error: Expected closing parenthesis ')'\n");
+                                                            }
+                                                        } else {
+                                                            printf("Error: Expected arithmetic operator\n");
+                                                        }
+                                                    } else {
+                                                        printf("Error: Expected arithmetic operator\n");
+                                                    }
+                                                } else {
+                                                    printf("Error: Expected variable\n");
+                                                }
+                                            } else {
+                                                printf("Error: Expected semicolon ';'\n");
+                                            }
+                                        } else {
+                                            printf("Error: Expected integer literal\n");
+                                        }
+                                    } else {
+                                        printf("Error: Expected relational operator\n");
+                                    }
+                                } else {
+                                    printf("Error: Expected variable\n");
+                                }
+                             } else {
+                                printf("Error: Expected semicolon ';'\n");
+                             }
+                        } else {
+                            printf("Error: Expected integer literal\n");
+                        }
+                    } else {
+                        printf("Error: Expected assignment operator '='\n");
+                    }
+                } else {
+                    printf("Error: Expected variable\n");
+                }
+            } else {
+                printf("Error: Expected data type keyword\n");
+            }
+
+        } else {
+            printf("Error: Expected opening parenthesis '('\n");
+        }
+    }
+
+    // while_statement Check for the KEYWORD token (must be "dum")
+    else if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "dum") == 0) {
+        printf("(ITERATIVE_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print dum
+        (*index)++;
+
+        // Check for opening parenthesis 'dum ('
+        if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
+            printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
+            (*index)++;
+
+            // Check for variable 'dum (variable'
+            if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
+                printf("(VARIABLE: %s)", tokens[*index].lexeme); // Print variable
+                (*index)++;
+
+                // Check for relational operator 'dum (variable relational_op'
+                if (strcmp(tokens[*index].tokenType, "RELATIONAL_OP") == 0) {
+                    printf("(RELATIONAL_OP: %s)", tokens[*index].lexeme); // Print relational operator
+                    (*index)++;
+
+                    // Check for INTEGER_LITERAL token 'dum (variable relational_op INTEGER_LITERAL'
+                    if (strcmp(tokens[*index].tokenType, "INTEGER_LITERAL") == 0) {
+                        printf("(INTEGER_LITERAL: %s)", tokens[*index].lexeme); // Print INTEGER_LITERAL
+                        (*index)++;
+
+                        // Check for closing parenthesis 'dum (variable relational_op INTEGER_LITERAL)'
+                        if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
+                            printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
+                            (*index)++;
+
+                            // Check for opening curly braces 'dum (variable relational_op INTEGER_LITERAL) {'
+                            if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "{") == 0) {
+                                printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening curly braces
+                                (*index)++;
+
+                                // Check for the KEYWORD token (must be "disp") 'dum (variable relational_op INTEGER_LITERAL) { disp'
+                                if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "disp") == 0) {
+                                    printf("(OUTPUT_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print KEYWORD
+                                    (*index)++;
+
+                                    // Check for opening parenthesis  'dum (variable relational_op INTEGER_LITERAL) { disp ('
+                                    if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
+                                        printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
+                                        (*index)++;
+
+                                        // Handle STRING_LITERAL token 'dum (variable relational_op INTEGER_LITERAL) { disp (string_literal'
+                                        if (*index < tokenCount && strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0) {
+                                            printf("(STRING_LITERAL: %s)", tokens[*index].lexeme); // Print STRING_LITERAL
+                                            (*index)++;
+
+                                            // Check for closing parenthesis 'dum (variable relational_op INTEGER_LITERAL) { disp (string_literal)'
+                                            if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
+                                                printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
+                                                (*index)++;
+
+                                                // Check for closing parenthesis 'dum (variable relational_op INTEGER_LITERAL) { disp (string_literal) //'
+                                                if (*index < tokenCount && strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0) {
+                                                    printf("(LINE_TERMINATOR: %s)", tokens[*index].lexeme); // Print LINE_TERMINATOR
+                                                    (*index)++;
+
+                                                    // Check for variable 'dum (variable relational_op INTEGER_LITERAL) { disp (string_literal) // variable}'
+                                                    if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
+                                                        printf("(VARIABLE: %s)", tokens[*index].lexeme); // Print variable
+                                                        (*index)++;
+
+                                                        // Check for assignment operator 'dum (variable relational_op INTEGER_LITERAL) { disp (string_literal) // variable +'
+                                                        if (strcmp(tokens[*index].tokenType, "ARITHMETIC_OP") == 0) {
+                                                            printf("(ARITHMETIC_OP: %s)", tokens[*index].lexeme); // Print arithmetic operator
+                                                            (*index)++;
+
+                                                            // Check for assignment operator 'dum (variable relational_op INTEGER_LITERAL) { disp (string_literal) // variable ++'
+                                                            if (strcmp(tokens[*index].tokenType, "ARITHMETIC_OP") == 0) {
+                                                                printf("(ARITHMETIC_OP: %s)", tokens[*index].lexeme); // Print arithmetic operator
+                                                                (*index)++;
+
+                                                                // Check for opening curly braces 'dum (variable relational_op INTEGER_LITERAL) { disp (string_literal) // variable ++ }'
+                                                                if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "}") == 0) {
+                                                                    printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening curly braces
+                                                                    (*index)++;
+                                                                } else {
+                                                                    printf("Error: Expected closing curly braces '}'\n");
+                                                                }
+                                                            } else {
+                                                                printf("Error: Expected arithmetic operator\n");
+                                                            }
+                                                        } else {
+                                                            printf("Error: Expected arithmetic operator\n");
+                                                        }   
+                                                    } else {
+                                                        printf("Error: Expected variable\n");
+                                                    }
+                                                } else {
+                                                    printf("Error: Expected line terminator (//)\n");
+                                                }
+                                            } else {
+                                                printf("Error: Expected closing parenthesis ')'\n");
+                                            }
+                                        } else {
+                                            printf("Error: Expected string literal\n");
+                                        }
+                                    } else {
+                                        printf("Error: Expected opening parenthesis '('\n");
+                                    }
+                                } else {
+                                    printf("Error: Expected output keyword 'disp'\n");
+                                }
+                            } else {
+                                printf("Error: Expected opening curly braces '{'\n");
+                            }
+                        } else {
+                            printf("Error: Expected closing parenthesis ')'\n");
+                        }
+                    } else {
+                        printf("Error: Expected integer literal\n");
+                    }
+                } else {
+                    printf("Error: Expected relational operator\n");
+                }
+            } else {
+                printf("Error: Expected variable\n");
+            }
+        } else {
+            printf("Error: Expected opening parenthesis '('\n");
+        }
+    }
+
+    // do_while_statement Check for the KEYWORD token (must be "exec")
+    else if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "exec") == 0) {
+        printf("(ITERATIVE_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print dum
+        (*index)++;
+
+        // Check for opening curly braces 'exec {'
+        if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "{") == 0) {
+            printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening curly braces
+            (*index)++;
+
+            // Check for the KEYWORD token (must be "disp") 'exec { disp'
+            if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "disp") == 0) {
+                printf("(OUTPUT_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print KEYWORD
+                (*index)++;
+
+                // Check for opening parenthesis  'exec { disp ('
+                if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
+                    printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
+                    (*index)++;
+
+                    // Handle STRING_LITERAL token 'exec { disp (string_literal'
+                    if (*index < tokenCount && strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0) {
+                        printf("(STRING_LITERAL: %s)", tokens[*index].lexeme); // Print STRING_LITERAL
+                        (*index)++;
+
+                        // Check for closing parenthesis 'exec { disp (string_literal) //'
+                        if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
+                                printf("(DELIMETER: %s))\n", tokens[*index].lexeme); // Print closing curly braces
+                                (*index)++;
+
+                            // Check for 'exec { disp (string_literal) //'
+                            if (*index < tokenCount && strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0) {
+                                printf("(LINE_TERMINATOR: %s)", tokens[*index].lexeme); // Print LINE_TERMINATOR
+                                (*index)++;
+
+                                // Check for closing curly braces 'exec { disp (string_literal) // variable'
+                                if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
+                                    printf("(VARIABLE: %s)", tokens[*index].lexeme); // Print variable
+                                    (*index)++;
+
+                                    // Check for assignment operator 'exec { disp (string_literal) // variable +'
+                                    if (strcmp(tokens[*index].tokenType, "ARITHMETIC_OP") == 0) {
+                                        printf("(ARITHMETIC_OP: %s)", tokens[*index].lexeme); // Print arithmetic operator
+                                        (*index)++;
+
+                                        // Check for assignment operator 'exec { disp (string_literal) // variable ++'
+                                        if (strcmp(tokens[*index].tokenType, "ARITHMETIC_OP") == 0) {
+                                            printf("(ARITHMETIC_OP: %s)", tokens[*index].lexeme); // Print arithmetic operator
+                                            (*index)++;
+
+                                            // Check for opening curly braces 'exec { disp (string_literal) // variable ++ //'
+                                            if (strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0 && strcmp(tokens[*index].lexeme, "}") == 0) {
+                                                printf("(LINE_TERMINATOR: %s)", tokens[*index].lexeme); // Print line terminator
+                                                (*index)++;
+
+                                                // Check for closing curly braces 'exec { disp (string_literal) // variable ++ // }'
+                                                if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "}") == 0) {
+                                                    printf("(DELIMETER: %s))\n", tokens[*index].lexeme); // Print closing curly braces
+                                                    (*index)++;
+
+                                                    // Check for keyword 'dum'
+                                                    if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "dum") == 0) {
+                                                        printf("(ITERATIVE_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print dum
+                                                        (*index)++;
+
+                                                        // Check for opening parenthesis 'dum ('
+                                                        if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
+                                                            printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
+                                                            (*index)++;
+
+                                                            // Check for variable 'dum (variable'
+                                                            if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
+                                                                printf("(VARIABLE: %s)", tokens[*index].lexeme); // Print variable
+                                                                (*index)++;
+
+                                                                // Check for relational operator 'dum (variable relational_op'
+                                                                if (strcmp(tokens[*index].tokenType, "RELATIONAL_OP") == 0) {
+                                                                    printf("(RELATIONAL_OP: %s)", tokens[*index].lexeme); // Print relational operator
+                                                                    (*index)++;
+
+                                                                    // Check for INTEGER_LITERAL token 'dum (variable relational_op INTEGER_LITERAL'
+                                                                    if (strcmp(tokens[*index].tokenType, "INTEGER_LITERAL") == 0) {
+                                                                        printf("(INTEGER_LITERAL: %s)", tokens[*index].lexeme); // Print INTEGER_LITERAL
+                                                                        (*index)++;
+
+                                                                        // Check for closing parenthesis 'dum (variable relational_op INTEGER_LITERAL)'
+                                                                        if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
+                                                                            printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
+                                                                            (*index)++;
+
+                                                                            // Check for opening curly braces 'dum (variable relational_op INTEGER_LITERAL) //'
+                                                                            if (strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0 && strcmp(tokens[*index].lexeme, "{") == 0) {
+                                                                                printf("(LINE_TERMINATOR: %s)", tokens[*index].lexeme); // Print line terminator
+                                                                                (*index)++;
+                                                                            } else {
+                                                                                printf("Error: Expected opening curly braces '{'\n");
+                                                                            }
+                                                                        } else {
+                                                                            printf("Error: Expected closing parenthesis ')'\n");
+                                                                        }
+                                                                    } else {
+                                                                        printf("Error: Expected integer literal\n");
+                                                                    }
+                                                                } else {
+                                                                    printf("Error: Expected relational operator\n");
+                                                                }
+                                                            } else {
+                                                                printf("Error: Expected variable\n");
+                                                            }
+                                                        } else {
+                                                            printf("Error: Expected opening parenthesis '('\n");
+                                                        }
+                                                    } else {
+                                                        printf("Error: Expected keyword 'dum'\n");
+                                                    }
+                                                } else {
+                                                    printf("Error: Expected closing curly braces '}'\n");
+                                                }
+                                            } else {
+                                                printf("Error: Expected line terminator (//)\n");
+                                            }
+                                        } else {
+                                            printf("Error: Expected arithmetic operator\n");
+                                        }
+                                    } else {
+                                        printf("Error: Expected arithmetic operator\n");
+                                    }
+                                } else {
+                                    printf("Error: Expected variable\n");
+                                }
+                            } else {
+                                printf("Error: Expected line terminator (//)\n");
+                            }
+                        } else {
+                            printf("Error: Expected closing parenthesis ')'\n");
+                        }
+                    } else {
+                        printf("Error: Expected string literal\n");
+                    }
+                } else {
+                    printf("Error: Expected opening parenthesis '('\n");
+                }
+            } else {
+                printf("Error: Expected output keyword 'disp'\n");
+            }
+        } else {
+            printf("Error: Expected opening curly braces '{'\n");
+        }
+    } else {
+        printf("Error: Expected iterative keyword 'pro', 'dum', or 'exec'\n");
+    }                                          
+}
+    
+// Conditional Statement parser
+void Conditional_Stmt(Token* tokens, int* index, int tokenCount) {
+    if (*index >= tokenCount) return;
+
+    // Check for the INPUT_KEYWORD token (e.g., 'quando')
+    if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "quando") == 0) {
+        printf("(CONDITIONAL_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print CONDITIONAL_KEYWORD
+        (*index)++;
+
+        // Check for opening parenthesis 'quando ('
+        if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
+            printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
+            (*index)++;
+
+            // Expect a variable 'quando (variable'
+            if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
+                printf("(VARIABLE: %s)", tokens[*index].lexeme); // Print variable
+                (*index)++;
+
+                // Expect Relational OP 'quando (variable relational_op'
+                if (strcmp(tokens[*index].tokenType, "RELATIONAL_OP") == 0) {
+                    printf("(RELATIONAL_OP: %s)", tokens[*index].lexeme); // Print variable
+                    (*index)++;
+
+                    // Check for init value 'quando (variable relational_op init_value'
+                    if (*index < tokenCount && strcmp(tokens[*index].tokenType, "INTEGER_LITERAL") == 0 ||
                         strcmp(tokens[*index].tokenType, "FLOAT_LITERAL") == 0 || 
                         strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0 || 
                         strcmp(tokens[*index].tokenType, "CHAR_LITERAL") == 0 ) {
                         printf("(%s: %s)", tokens[*index].tokenType, tokens[*index].lexeme); // Print init_value
                         (*index)++;
 
-                            // Check for closing parenthesis ')'
-                            if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
+                        // Check for closing parenthesis ')' 'quando (variable relational_op init_value)'
+                        if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
                             printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
                             (*index)++;
                                 
-                                // Check for opening curly braces '{'
-                                if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "{") == 0) {
+                            // Check for opening curly braces 'quando (variable relational_op init_value) {' 
+                            if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "{") == 0) {
                                 printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
                                 (*index)++;
 
-                                        // Check for the KEYWORD token (must be "disp")
-                                        if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "disp") == 0) {
-                                            printf("(OUTPUT_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print KEYWORD
+                                // Check for the KEYWORD token (must be "disp") 'quando (variable relational_op init_value) { disp'
+                                if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "disp") == 0) {
+                                    printf("(OUTPUT_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print KEYWORD
+                                    (*index)++;
+
+                                    // Check for opening parenthesis  'quando (variable relational_op init_value) { disp ('
+                                    if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
+                                        printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
+                                        (*index)++;
+
+                                        // Handle STRING_LITERAL token 'quando (variable relational_op init_value) { disp (string_literal'
+                                        if (*index < tokenCount && strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0) {
+                                            printf("(STRING_LITERAL: %s)", tokens[*index].lexeme); // Print STRING_LITERAL
                                             (*index)++;
 
-                                            // Check for opening parenthesis '('
-                                                if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
-                                                    printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
+                                            // Check for closing parenthesis 'quando (variable relational_op init_value) { disp (string_literal)'
+                                            if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
+                                                printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
+                                                (*index)++;
+                                                        
+                                                // Check for LINE_TERMINATOR token 'quando (variable relational_op init_value) { disp (string_literal) //'
+                                                if (*index < tokenCount && strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0) {
+                                                    printf("(LINE_TERMINATOR: %s)", tokens[*index].lexeme); // Print LINE_TERMINATOR
                                                     (*index)++;
 
-                                                // Handle STRING_LITERAL token
-                                                    if (*index < tokenCount && strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0) {
-                                                        printf("(STRING_LITERAL: %s)", tokens[*index].lexeme); // Print STRING_LITERAL
+                                                   // Check for closing curly braces 'quando (variable relational_op init_value) { disp (string_literal) // }'
+                                                    if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "}") == 0) {
+                                                        printf("(DELIMETER: %s))\n", tokens[*index].lexeme); // Print closing curly braces
                                                         (*index)++;
 
-                                                    // Check for closing parenthesis ')'
-                                                        if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
-                                                        printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
-                                                        (*index)++;
-                                                        
-                                                        // Check for LINE_TERMINATOR token
-                                                            if (*index < tokenCount && strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0) {
-                                                                printf("(LINE_TERMINATOR: %s)", tokens[*index].lexeme); // Print LINE_TERMINATOR
+                                                        // Check for the KEYWORD token (must be "opt")  'opt    
+                                                        if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "opt") == 0) {
+                                                            printf("(KEYWORD: %s)", tokens[*index].lexeme); // Print KEYWORD
+                                                            (*index)++;
+
+                                                            // Check for opening parenthesis 'opt ('
+                                                            if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
+                                                                printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
                                                                 (*index)++;
 
-                                                                // Check for closing curly braces '}'
-                                                                if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "}") == 0) {
-                                                                printf("(DELIMETER: %s))\n", tokens[*index].lexeme); // Print closing curly braces
-                                                                (*index)++;
-
-                                                                    // Check for the KEYWORD token (must be "opt")      
-                                                                    if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "opt") == 0) {
-                                                                        printf("(OUTPUT_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print KEYWORD
+                                                                // Expect a variable 'opt (variable'
+                                                                if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
+                                                                    printf("(VARIABLE: %s)", tokens[*index].lexeme); // Print variable
+                                                                    (*index)++;
+                                                                            
+                                                                    // Expect Relational OP 'opt (variable relational_op'
+                                                                    if (strcmp(tokens[*index].tokenType, "RELATIONAL_OP") == 0) {
+                                                                        printf("(RELATIONAL_OP: %s)", tokens[*index].lexeme); // Print variable
                                                                         (*index)++;
 
-                                                                        // Check for opening parenthesis '('
-                                                                        if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
-                                                                            printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
+                                                                        // Check for init value 'opt (variable relational_op init_value'
+                                                                         if (*index < tokenCount && strcmp(tokens[*index].tokenType, "INTEGER_LITERAL") == 0 ||
+                                                                            strcmp(tokens[*index].tokenType, "FLOAT_LITERAL") == 0 || 
+                                                                            strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0 || 
+                                                                            strcmp(tokens[*index].tokenType, "CHAR_LITERAL") == 0 ) {
+                                                                            printf("(%s: %s)", tokens[*index].tokenType, tokens[*index].lexeme); // Print init_value
                                                                             (*index)++;
 
-                                                                            // Expect a variable
-                                                                            if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
-                                                                                printf("(VARIABLE: %s)", tokens[*index].lexeme); // Print variable
+                                                                            // Check for closing parenthesis 'opt (variable relational_op init_value)'
+                                                                            if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
+                                                                                printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
                                                                                 (*index)++;
 
-                                                                            
-                                                                                // Expect Relational OP
-                                                                                if (strcmp(tokens[*index].tokenType, "RELATIONAL_OP") == 0) {
-                                                                                    printf("(RELATIONAL_OP: %s)", tokens[*index].lexeme); // Print variable
+                                                                                // Check for opening curly braces 'opt (variable relational_op init_value) {'
+                                                                                if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "{") == 0) {
+                                                                                    printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
                                                                                     (*index)++;
-                                                                                } else {
-                                                                                    printf("Error: Expected relational operator\n");
-                                                                                }
 
-                                                                                        // Check for init value
-                                                                                            if (*index < tokenCount && strcmp(tokens[*index].tokenType, "INTEGER_LITERAL") == 0 ||
-                                                                                            strcmp(tokens[*index].tokenType, "FLOAT_LITERAL") == 0 || 
-                                                                                            strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0 || 
-                                                                                            strcmp(tokens[*index].tokenType, "CHAR_LITERAL") == 0 ) {
-                                                                                            printf("(%s: %s)", tokens[*index].tokenType, tokens[*index].lexeme); // Print init_value
+                                                                                    // Check for 'opt (variable relational_op init_value) { disp'
+                                                                                    if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "disp") == 0) {
+                                                                                        printf("(KEYWORD: %s)", tokens[*index].lexeme); // Print KEYWORD
+                                                                                        (*index)++;
+
+                                                                                        // Check for 'opt (variable relational_op init_value) { disp('
+                                                                                        if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
+                                                                                            printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
                                                                                             (*index)++;
 
-                                                                                                 // Check for closing parenthesis ')'
+                                                                                            // Check for 'opt (variable relational_op init_value) { disp(STRING_LITERAL'
+                                                                                            if (*index < tokenCount && strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0) {
+                                                                                                printf("(STRING_LITERAL: %s)", tokens[*index].lexeme); // Print STRING_LITERAL
+                                                                                                (*index)++;
+
+                                                                                                // Check for 'opt (variable relational_op init_value) { disp(STRING_LITERAL)'
                                                                                                 if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
                                                                                                     printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
-                                                                                                    (*index)++;
-                                                                                                } else {
-                                                                                                    printf("Error: Expected closing parenthesis ')'\n");
-                                                                                                }
+                                                                                                    (*index)++;     
 
-                                                                                                    // Check for opening curly braces '{'
-                                                                                                    if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "{") == 0) {
-                                                                                                    printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
-                                                                                                    (*index)++;
-
-                                                                                                        // Check for the KEYWORD token (must be "disp")
-                                                                                                        if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "disp") == 0) {
-                                                                                                            printf("(OUTPUT_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print KEYWORD
+                                                                                                    // Check for 'opt (variable relational_op init_value) { disp(STRING_LITERAL) //'
+                                                                                                    if (*index < tokenCount && strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0) {
+                                                                                                        printf("(LINE_TERMINATOR: %s)", tokens[*index].lexeme); // Print LINE_TERMINATOR
+                                                                                                        (*index)++;
+                                                                                                                            
+                                                                                                        // Check for 'opt (variable relational_op init_value) { disp(STRING_LITERAL) // }'
+                                                                                                        if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "}") == 0) {
+                                                                                                            printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing curly braces
                                                                                                             (*index)++;
 
-                                                                                                            // Check for opening parenthesis '('
-                                                                                                            if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
-                                                                                                                printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
+                                                                                                            // Check for 'alt'
+                                                                                                            if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "alt") == 0) {
+                                                                                                                printf("(CONDITIONAL_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print CONDITIONAL_KEYWORD
                                                                                                                 (*index)++;
 
-                                                                                                                
-                                                                                                                // Handle STRING_LITERAL token
-                                                                                                                if (*index < tokenCount && strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0) {
-                                                                                                                    printf("(STRING_LITERAL: %s)", tokens[*index].lexeme); // Print STRING_LITERAL
+                                                                                                                // Check for 'alt {'
+                                                                                                                if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "{") == 0) {
+                                                                                                                    printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
                                                                                                                     (*index)++;
 
-                                                                                                                    // Check for closing parenthesis ')'
-                                                                                                                    if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
-                                                                                                                    printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
-                                                                                                                    (*index)++;     
+                                                                                                                    // Check for 'alt { disp'
+                                                                                                                    if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "disp") == 0) {
+                                                                                                                        printf("(KEYWORD: %s)", tokens[*index].lexeme); // Print KEYWORD
+                                                                                                                        (*index)++;
 
-                                                                                                                        // Check for LINE_TERMINATOR token
-                                                                                                                        if (*index < tokenCount && strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0) {
-                                                                                                                            printf("(LINE_TERMINATOR: %s)", tokens[*index].lexeme); // Print LINE_TERMINATOR
+                                                                                                                        // Check for 'alt { disp('
+                                                                                                                        if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
+                                                                                                                            printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
                                                                                                                             (*index)++;
-                                                                                                                            
-                                                                                                                            // Check for closing curly braces ''
-                                                                                                                            if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "}") == 0) {
-                                                                                                                                printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing curly braces
+
+                                                                                                                            // Check for 'alt { disp(STRING_LITERAL'
+                                                                                                                            if (*index < tokenCount && strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0) {
+                                                                                                                                printf("(STRING_LITERAL: %s)", tokens[*index].lexeme); // Print STRING_LITERAL
                                                                                                                                 (*index)++;
 
-                                                                                                                                // Check for the INPUT_KEYWORD token (e.g., 'alt')
-                                                                                                                                if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "alt") == 0) {
-                                                                                                                                    printf("(CONDITIONAL_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print CONDITIONAL_KEYWORD
-                                                                                                                                    (*index)++;
+                                                                                                                                // Check for 'alt { disp(STRING_LITERAL)'
+                                                                                                                                if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
+                                                                                                                                    printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
+                                                                                                                                    (*index)++;  
 
-                                                                                                                                    // Check for opening curly braces '{'
-                                                                                                                                    if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "{") == 0) {
-                                                                                                                                        printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
+                                                                                                                                    // Check for 'alt { disp(STRING_LITERAL) //'
+                                                                                                                                    if (*index < tokenCount && strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0) {
+                                                                                                                                        printf("(LINE_TERMINATOR: %s)", tokens[*index].lexeme); // Print LINE_TERMINATOR
                                                                                                                                         (*index)++;
 
-                                                                                                                                        // Check for the KEYWORD token (must be "disp")
-                                                                                                                                        if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "disp") == 0) {
-                                                                                                                                            printf("(OUTPUT_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print KEYWORD
+                                                                                                                                        // Check for 'alt { disp(STRING_LITERAL) // }'
+                                                                                                                                        if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "}") == 0) {
+                                                                                                                                            printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing curly braces
                                                                                                                                             (*index)++;
-
-                                                                                                                                            // Check for opening parenthesis '('
-                                                                                                                                            if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
-                                                                                                                                                printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
-                                                                                                                                                (*index)++;
-
-                                                                                                                                                // Handle STRING_LITERAL token
-                                                                                                                                                if (*index < tokenCount && strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0) {
-                                                                                                                                                    printf("(STRING_LITERAL: %s)", tokens[*index].lexeme); // Print STRING_LITERAL
-                                                                                                                                                    (*index)++;
-
-                                                                                                                                                    // Check for closing parenthesis ')'
-                                                                                                                                                    if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
-                                                                                                                                                    printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
-                                                                                                                                                    (*index)++;  
-
-                                                                                                                                                         // Check for LINE_TERMINATOR token
-                                                                                                                                                        if (*index < tokenCount && strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0) {
-                                                                                                                                                            printf("(LINE_TERMINATOR: %s)", tokens[*index].lexeme); // Print LINE_TERMINATOR
-                                                                                                                                                            (*index)++;
-
-                                                                                                                                                            // Check for closing curly braces '}'
-                                                                                                                                                            if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "}") == 0) {
-                                                                                                                                                                printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing curly braces
-                                                                                                                                                                (*index)++;
-
-
-                                                                                                                                                                
-                                                                                                                                                            } else {
-                                                                                                                                                                printf("Error: Expected closing curly braces '}'\n");
-                                                                                                                                                            }
-
-                                                                                                                                                        } else { 
-                                                                                                                                                            printf("Error: Expected line terminator (//)\n");
-                                                                                                                                                        }
-
-                                                                                                                                                    } else {
-                                                                                                                                                    printf("Error: Expected closing parenthesis ')'\n");
-                                                                                                                                                    }
-
-                                                                                                                                                } else {
-                                                                                                                                                    printf("Error: Expected string literal\n");
-                                                                                                                                                }
-
-                                                                                                                                            } else {
-                                                                                                                                                printf("Error: Expected opening parenthesis '('\n");
-                                                                                                                                            }
-
-                                                                                                                                        } else {
-                                                                                                                                            printf("Error: Expected output keyword 'disp'\n");
+                                                                                                                                        } else { // Error Check for 'alt { disp(STRING_LITERAL) // }'
+                                                                                                                                            printf("Error: Expected closing curly braces '}'\n");
                                                                                                                                         }
-                                                                                                                                    
-                                                                                                                                    } else {
-                                                                                                                                        printf("Error: Expected opening curly braces '{'\n");
+                                                                                                                                    } else { // Error Check for 'alt { disp(STRING_LITERAL) //'
+                                                                                                                                        printf("Error: Expected line terminator (//)\n");
                                                                                                                                     }
-
-                                                                                                                                } else {
-                                                                                                                                    printf("Error: Expected conditional keyword 'alt'\n");
+                                                                                                                                } else { // Error Check for 'alt { disp(STRING_LITERAL)'
+                                                                                                                                    printf("Error: Expected closing parenthesis ')'\n");
                                                                                                                                 }
-                                                                                                                            } else {
-                                                                                                                                printf("Error: Expected opening curly braces '{'\n");
+                                                                                                                            } else { // Error Check for 'alt { disp( STRING_LITERAL'
+                                                                                                                                printf("Error: Expected string literal\n");
                                                                                                                             }
-
-                                                                                                                        } else {
-                                                                                                                            printf("Error: Expected line terminator (//)\n");
+                                                                                                                        } else { // Error Check for 'alt { disp('
+                                                                                                                            printf("Error: Expected opening parenthesis '('\n");
                                                                                                                         }
-
-                                                                                                                    } else {
-                                                                                                                        printf("Error: Expected closing parenthesis ')'\n");
-                                                                                                                    }
-
-                                                                                                                } else {
-                                                                                                                    printf("Error: Expected string literal\n");
+                                                                                                                    } else { // Error Check for 'alt { disp'
+                                                                                                                        printf("Error: Expected output keyword 'disp'\n");
+                                                                                                                    }                                                        
+                                                                                                                } else { // Error Check for 'alt {'
+                                                                                                                    printf("Error: Expected opening curly braces '{'\n");
                                                                                                                 }
-
-                                                                                                            } else {
-                                                                                                                printf("Error: Expected opening parenthesis '('\n");
+                                                                                                            } else { // Error Check for 'alt'
+                                                                                                                printf("Error: Expected conditional keyword 'alt'\n");
                                                                                                             }
-                                                                              
-
-                                                                                                        } else {
-                                                                                                            printf("Error: Expected output keyword 'disp'\n");
+                                                                                                        } else { // Error Check for 'opt (variable relational_op init_value) { disp (string_literal) // }'
+                                                                                                            printf("Error: Expected closing curly braces '}'\n");
                                                                                                         }
-
-                                                                                                    } else {
-                                                                                                        printf("Error: Expected opening curly braces '{'\n");
+                                                                                                    } else { // Error Check for 'opt (variable relational_op init_value) { disp (string_literal) //'
+                                                                                                        printf("Error: Expected line terminator (//)\n");
                                                                                                     }
-
-                                                                                            } else {
-                                                                                            printf("Error: Expected init_value\n");
+                                                                                                } else { // Error Check for 'opt (variable relational_op init_value) { disp (string_literal)'
+                                                                                                    printf("Error: Expected closing parenthesis ')'\n");
+                                                                                                }
+                                                                                            } else { // Error Check for 'opt (variable relational_op init_value) { disp(string_literal'
+                                                                                                printf("Error: Expected string literal\n");
                                                                                             }
-
-                                                                            } else {
-                                                                            printf("Error: Expected variable\n");
+                                                                                        } else { // Error Check for 'opt (variable relational_op init_value) { disp('
+                                                                                            printf("Error: Expected opening parenthesis '('\n");
+                                                                                        }
+                                                                                    } else { // Error Check for 'opt (variable relational_op init_value) { disp'
+                                                                                        printf("Error: Expected output keyword 'disp'\n");
+                                                                                    }
+                                                                                } else { // Error Check for 'opt (variable relational_op init_value) {'
+                                                                                    printf("Error: Expected opening curly braces '{'\n");
+                                                                                }
+                                                                            } else { // Error Check for 'opt (variable relational_op init_value)'
+                                                                                printf("Error: Expected closing parenthesis\n");
                                                                             }
-
-                                                                        } else {
-                                                                            printf("Error: Expected opening parenthesis '('\n");
+                                                                        } else { // Error Check for 'opt (variable relational_op init_value'
+                                                                            printf("Error: Expected init_value\n");
                                                                         }
-
-                                                                    } else {
-                                                                        printf("Error: Expected output keyword 'opt'\n");
+                                                                    } else { // Error Check for 'opt (variable relational_op'
+                                                                        printf("Error: Expected relational_op\n");
                                                                     }
-
-                                                                } else {
-                                                                    printf("Error: Expected closing curly braces ')'\n");
+                                                                } else { // Error Check for 'opt (variable'
+                                                                    printf("Error: Expected variable\n");
                                                                 }
-
-                                                            } else {
-                                                                printf("Error: Expected line terminator (//)\n");
+                                                            } else { // Error Check for 'opt ('
+                                                                printf("Error: Expected opening parenthesis '('\n");
                                                             }
-                                                        
-                                                        } else {
-                                                        
 
-                                                        printf("Error: Expected closing parenthesis ')'\n");
+                                                        // If no opt encountered check for 'alt'
+                                                        } else if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "alt") == 0) { 
+                                                            printf("(KEYWORD: %s)", tokens[*index].lexeme); // Print CONDITIONAL_KEYWORD
+                                                            (*index)++;
+
+                                                            // Check for opening curly braces 'alt {'
+                                                            if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "{") == 0) {
+                                                                printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
+                                                                (*index)++;
+
+                                                                // Check for 'alt { disp'
+                                                                if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "disp") == 0) {
+                                                                    printf("(KEYWORD: %s)", tokens[*index].lexeme); // Print KEYWORD
+                                                                    (*index)++;
+
+                                                                    // Check for 'alt { disp('
+                                                                    if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
+                                                                        printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
+                                                                        (*index)++;
+
+                                                                        // Check for 'alt { disp(STRING_LITERAL'
+                                                                        if (*index < tokenCount && strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0) {
+                                                                            printf("(STRING_LITERAL: %s)", tokens[*index].lexeme); // Print STRING_LITERAL
+                                                                            (*index)++;
+
+                                                                            // Check for 'alt { disp(STRING_LITERAL)'
+                                                                            if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
+                                                                                printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
+                                                                                (*index)++;  
+
+                                                                                // Check for 'alt { disp(STRING_LITERAL) //'
+                                                                                if (*index < tokenCount && strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0) {
+                                                                                    printf("(LINE_TERMINATOR: %s)", tokens[*index].lexeme); // Print LINE_TERMINATOR
+                                                                                    (*index)++;
+
+                                                                                    // Check for 'alt { disp(STRING_LITERAL) // }'
+                                                                                    if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "}") == 0) {
+                                                                                        printf("(DELIMETER: %s)", tokens[*index].lexeme); // Print closing curly braces
+                                                                                        (*index)++;
+                                                                                    } else { // Error Check for 'alt { disp(STRING_LITERAL) // }'
+                                                                                        printf("Error: Expected closing curly braces '}'\n");
+                                                                                    }
+                                                                                } else { // Error Check for 'alt { disp(STRING_LITERAL) //'
+                                                                                    printf("Error: Expected line terminator (//)\n");
+                                                                                }
+                                                                            } else { // Error Check for 'alt { disp(STRING_LITERAL)'    
+                                                                                printf("Error: Expected closing parenthesis ')'\n");
+                                                                            }
+                                                                        } else { // Error Check for 'alt { disp(STRING_LITERAL'
+                                                                            printf("Error: Expected string literal\n");
+                                                                        }
+                                                                    } else { // Error Check for 'alt { disp('
+                                                                        printf("Error: Expected opening parenthesis '('\n");
+                                                                    }
+                                                                } else { // Error Check for 'alt { disp'
+                                                                    printf("Error: Expected output keyword 'disp'\n");
+                                                                }
+                                                            } else { // Error Check for 'alt {'
+                                                                printf("Error: Expected opening curly braces '{'\n");
+                                                            }
+                                                        } else { // Error Check for 'opt' or 'alt
+                                                            printf("Error: Expected output keyword 'opt' or 'alt' \n");
                                                         }
-
-                                                    } else {
-                                                        printf("Error: Expected string literal\n");
+                                                    } else { // Error Check for 'quando (variable relational_op init_value) { disp (string_literal) // }'
+                                                        printf("Error: Expected closing curly braces ')'\n");
                                                     }
-                                                
-                                                } else {
-                                                    printf("Error: Expected opening parenthesis '('\n");
-                                                }
-
-                                        } else {
-                                            printf("Error: Expected output keyword 'disp'\n");
-                                        }
-
-                                } else {
-                                    printf("Error: Expected opening curly braces '{'\n");
+                                                } else { // Error Check for 'quando (variable relational_op init_value) { disp (string_literal) //'
+                                                    printf("Error: Expected line terminator (//)\n");
+                                                }        
+                                            } else { // Error Check for 'quando (variable relational_op init_value) { disp (string_literal)'
+                                                printf("Error: Expected closing parenthesis ')'\n");
+                                            }
+                                        } else { // Error Check for 'quando (variable relational_op init_value) { disp (string_literal'
+                                            printf("Error: Expected string literal\n");
+                                        }        
+                                    } else { // Error Check for  'quando (variable relational_op init_value) { disp ('
+                                        printf("Error: Expected opening parenthesis '('\n");
+                                    }
+                                } else { // Error Check for 'quando (variable relational_op init_value) { disp'
+                                    printf("Error: Expected output keyword 'disp'\n");
                                 }
-
-                            } else {
-                            printf("Error: Expected closing parenthesis ')'\n");
+                            } else { // Error Check for 'quando (variable relational_op init_value) {'
+                                printf("Error: Expected opening curly braces '{'\n");
                             }
-
-                        } else {
-                            printf("Error: Expected init_value\n");
+                        } else { // Error Check for 'quando (variable relational_op init_value)'
+                            printf("Error: Expected closing parenthesis ')'\n");
                         }
-
-                    } else {
-                        printf("Error: Expected relational operator\n");
+                    } else { // Error Check for 'quando (variable relational_op init_value'
+                        printf("Error: Expected init_value\n");
                     }
+                } else { // Error Check for 'quando (variable relational_op'
+                    printf("Error: Expected relational operator\n");
                 }
-                else {
+            } else { // Error Check for 'quando (variable'
                     printf("Error: Expected variable\n");
-                }
-            } else {
-                printf("Error: Expected opening parenthesis '('\n");
             }
-        } else {
-            printf("Error: Expected conditional keyword 'quando'\n");
+        } else { // Error check for opening parenthesis 'quando ('
+            printf("Error: Expected opening parenthesis '('\n");
         }
+    } else { // Error check for the INPUT_KEYWORD token (e.g., 'quando')
+        printf("Error: Expected conditional keyword 'quando'\n");
+    }
 }
-
-
-
 
 // Declaration Statement parser
 void Declaration_Stmt(Token* tokens, int* index, int tokenCount) {
@@ -582,7 +1050,6 @@ void Output_Stmt(Token* tokens, int* index, int tokenCount) {
         printf("Error: Expected keyword 'disp'\n");
     }
 }
-
 
 // Assign statement parser
 void Assign_Stmt(Token* tokens, int* index, int tokenCount) {
