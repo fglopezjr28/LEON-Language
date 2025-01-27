@@ -20,3 +20,35 @@ numbra @value , @vad = 95 , @fer , @gre //
 numbra @value , @vad , @fer = 76 , @gre //
 numbra @value , @vad , @fer , @gre = 56 //
 numbra @value , @vad , @fer , @gre , @score = 95 , @passingScore , @failingScore //
+
+quando ( @weight < 18.5 ) {
+disp ( "Your height is" ) //
+}
+
+quando ( @rainChance >= 30 ) {
+disp ( "Take" ) //
+} alt {
+disp ( "Take" ) //
+} 
+
+quando ( @day == 1 ) {
+	disp ( "Today" ) //
+} opt ( @day == 2 ) {
+	disp ( "Today" ) //
+} alt {
+	disp ( "Invalid" ) //
+}
+
+pro ( numbra @i = 0 ; @i < 5 ; @i ++ ) {         
+    disp ( "hello" ) //
+} 
+
+dum ( @i <= 5 ) {
+	disp ( "Hello" ) //
+	@i ++ //
+}
+
+exec {
+	disp ( "hello wprld" ) //
+	@i ++ //
+} dum ( numbra @i <= 5 ) //

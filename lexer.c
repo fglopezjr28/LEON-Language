@@ -1469,7 +1469,7 @@ void processLine(const char *line, int lineNumber, DynamicBuffer *buffer) {
 }
 
 int main() {
-    const char *sourceFileName = "ass_stmt.leon";
+    const char *sourceFileName = "output_stmt.leon";
 
     //Check the last five characters of the file name as .leon
     if (strlen(sourceFileName) < 5 || strcmp(sourceFileName + strlen(sourceFileName) - 5, ".leon") != 0) {

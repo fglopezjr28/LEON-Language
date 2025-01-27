@@ -1,11 +1,13 @@
 quando ( @weight < 18.5 ) {
-disp ( "Your" ) //
+disp ( "Your height is" ) //
 }
+
 quando ( @rainChance >= 30 ) {
 disp ( "Take" ) //
 } alt {
 disp ( "Take" ) //
 } 
+
 quando ( @day == 1 ) {
 	disp ( "Today" ) //
 } opt ( @day == 2 ) {
