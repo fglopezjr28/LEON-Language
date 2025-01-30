@@ -43,7 +43,7 @@ const char* look_ahead(Token* tokens, int index) {
 // Function to process variables after a comma
 int processVariable(Token* tokens, int* index, int tokenCount, FILE* outputFile) {
     if (*index < tokenCount && strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
-        fprintf(outputFile, "(VARIABLE: %s)", tokens[*index].lexeme); // Print VARIABLE
+        fprintf(outputFile, "                   (VARIABLE: %s)\n", tokens[*index].lexeme); // Print VARIABLE
         (*index)++;
         return 1; // Successfully processed variable
     }
@@ -55,11 +55,44 @@ int processVariable(Token* tokens, int* index, int tokenCount, FILE* outputFile)
 int processCommaAndExpectVariable(Token* tokens, int* index, int tokenCount, FILE* outputFile) {
     if (*index < tokenCount && strcmp(tokens[*index].tokenType, "DELIMETER") == 0 &&
         strcmp(tokens[*index].lexeme, ",") == 0) {
-        fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme); // Print comma
+        fprintf(outputFile, "               (DELIMETER: %s)\n", tokens[*index].lexeme); // Print comma
         (*index)++;
         return processVariable(tokens, index, tokenCount, outputFile); // Expect variable after comma
     }
     return 0; // No comma found
+}
+
+void Data_Type(Token* tokens, int* index, int tokenCount, FILE* outputFile){
+    if (*index >= tokenCount) return;
+
+    // Check for the KEYWORD token (must be "numbra", "deca", "duplus", "signa", or "binar")
+    if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && 
+        strcmp(tokens[*index].lexeme, "numbra") == 0 ||
+        strcmp(tokens[*index].lexeme, "deca") == 0 ||
+        strcmp(tokens[*index].lexeme, "duplus") == 0 ||
+        strcmp(tokens[*index].lexeme, "signa") == 0 ||
+        strcmp(tokens[*index].lexeme, "binar") == 0) {
+        fprintf(outputFile, "(DATA_TYPE(KEYWORD: %s)\n", tokens[*index].lexeme); // Print KEYWORD
+        (*index)++;
+    } else {
+        fprintf(outputFile, "Error: Expected data type\n");
+    }
+}
+
+void Init_Value(Token* tokens, int* index, int tokenCount, FILE* outputFile){
+    if (*index >= tokenCount) return;
+
+    // Check for the INTEGER_LITERAL, STRING_LITERAL, CHARACTER_LITERAL, or FLOAT_LITERAL token
+    if (strcmp(tokens[*index].tokenType, "INTEGER_LITERAL") == 0 ||
+        strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0 ||
+        strcmp(tokens[*index].tokenType, "CHARACTER_LITERAL") == 0 ||
+        strcmp(tokens[*index].tokenType, "FLOAT_LITERAL") == 0) {
+        fprintf(outputFile, "(%s: %s)\n", tokens[*index].tokenType, tokens[*index].lexeme); // Print STRING_LITERAL
+        (*index)++;
+    } else {
+        fprintf(outputFile, "Error: Expected an Init_value after '='\n");
+            return;
+    }
 }
 
 // Output statement parser
@@ -68,12 +101,13 @@ void Output_Stmt(Token* tokens, int* index, int tokenCount, FILE* outputFile) {
 
     // Check for the KEYWORD token (must be "disp")
     if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "disp") == 0) {
-        fprintf(outputFile, "(OUTPUT_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print KEYWORD
+        fprintf(outputFile, "{OUTPUT_STATEMENT\n");
+        fprintf(outputFile, "   (KEYWORD: %s)\n", tokens[*index].lexeme); // Print KEYWORD
         (*index)++;
 
         // Check for the DELIMITER token (must be '(')
         if (*index < tokenCount && strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
-            fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
+            fprintf(outputFile, "       (DELIMETER: %s)\n", tokens[*index].lexeme); // Print opening parenthesis
             (*index)++;
 
             // Process the content inside the parentheses
@@ -81,19 +115,19 @@ void Output_Stmt(Token* tokens, int* index, int tokenCount, FILE* outputFile) {
 
             // Handle STRING_LITERAL token
             if (*index < tokenCount && strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0) {
-                fprintf(outputFile, "(STRING_LITERAL: %s)", tokens[*index].lexeme); // Print STRING_LITERAL
+                fprintf(outputFile, "           (STRING_LITERAL: %s)\n", tokens[*index].lexeme); // Print STRING_LITERAL
                 (*index)++;
                 processedSomething = 1;
             }
             // Handle FORMAT_SPECIFIER token
             else if (*index < tokenCount && strcmp(tokens[*index].tokenType, "FORMAT_SPECIFIER") == 0) {
-                fprintf(outputFile, "(FORMAT_SPECIFIER: %s)", tokens[*index].lexeme); // Print FORMAT_SPECIFIER
+                fprintf(outputFile, "               (FORMAT_SPECIFIER: %s)\n", tokens[*index].lexeme); // Print FORMAT_SPECIFIER
                 (*index)++;
                 processedSomething = 1;
             }
 
             // Process any subsequent variables or commas
-            while (*index < tokenCount && strcmp(tokens[*index].tokenType, "DELIMETER") == 0) {
+            while (*index < tokenCount && strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ",") == 0) {
                 if (!processCommaAndExpectVariable(tokens, index, tokenCount, outputFile)) {
                     break; // No more commas or variables
                 }
@@ -102,22 +136,22 @@ void Output_Stmt(Token* tokens, int* index, int tokenCount, FILE* outputFile) {
 
             // Check for closing parenthesis
             if (*index < tokenCount && strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
-                fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
+                fprintf(outputFile, "                   (DELIMETER: %s)\n", tokens[*index].lexeme); // Print closing parenthesis
                 (*index)++;
             } else {
-                fprintf(outputFile, "Error: Expected closing parenthesis ')'\n");
+                fprintf(outputFile, "                   Error: Expected closing parenthesis ')'\n");
                 return;
             }
 
             // Check for the LINE_TERMINATOR token (e.g., "//")
             if (*index < tokenCount && strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0) {
-                fprintf(outputFile, "(LINE_TERMINATOR: %s))\n\n", tokens[*index].lexeme); // Print LINE_TERMINATOR
+                fprintf(outputFile, "                       (LINE_TERMINATOR: %s)}\n", tokens[*index].lexeme); // Print LINE_TERMINATOR
                 (*index)++;
             } else {
-                fprintf(outputFile, "Error: Expected line terminator (//)\n");
+                fprintf(outputFile, "           Error: Expected line terminator (//)\n");
             }
         } else {
-            fprintf(outputFile, "Error: Expected opening parenthesis '('\n");
+            fprintf(outputFile, "       Error: Expected opening parenthesis '('\n");
         }
     } else {
         fprintf(outputFile, "Error: Expected keyword 'disp'\n");
@@ -139,13 +173,7 @@ void Iterative_Stmt(Token* tokens, int* index, int tokenCount, FILE* outputFile)
             (*index)++;
 
             // Check for opening parenthesis 'pro ( data_type'
-            if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "numbra") == 0 ||
-                strcmp(tokens[*index].lexeme, "deca") == 0 || 
-                strcmp(tokens[*index].lexeme, "duplus") == 0 || 
-                strcmp(tokens[*index].lexeme, "signa") == 0 ||
-                strcmp(tokens[*index].lexeme, "binar") == 0) {
-                fprintf(outputFile, "(KEYWORD: %s)", tokens[*index].lexeme); // Print data_type
-                (*index)++;
+            Data_Type(tokens, index, tokenCount, outputFile);
 
                 // Check for variable 'pro ( data_type variable'
                 if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
@@ -260,10 +288,6 @@ void Iterative_Stmt(Token* tokens, int* index, int tokenCount, FILE* outputFile)
                 } else {
                     fprintf(outputFile, "Error: Expected variable\n");
                 }
-            } else {
-                fprintf(outputFile, "Error: Expected data type keyword\n");
-            }
-
         } else {
             fprintf(outputFile, "Error: Expected opening parenthesis '('\n");
         }
@@ -413,13 +437,7 @@ void Iterative_Stmt(Token* tokens, int* index, int tokenCount, FILE* outputFile)
                                                 (*index)++;
 
                                                 // Check for data_type 'dum ( data_type'
-                                                if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "numbra") == 0 ||
-                                                    strcmp(tokens[*index].lexeme, "deca") == 0 || 
-                                                    strcmp(tokens[*index].lexeme, "duplus") == 0 || 
-                                                    strcmp(tokens[*index].lexeme, "signa") == 0 ||
-                                                    strcmp(tokens[*index].lexeme, "binar") == 0) {
-                                                    fprintf(outputFile, "(KEYWORD: %s)", tokens[*index].lexeme); // Print data_type
-                                                    (*index)++;
+                                                Data_Type(tokens, index, tokenCount, outputFile);
 
                                                     // Check for variable 'dum ( data_type variable'
                                                     if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
@@ -460,9 +478,6 @@ void Iterative_Stmt(Token* tokens, int* index, int tokenCount, FILE* outputFile)
                                                     } else {
                                                         fprintf(outputFile, "Error: Expected variable\n");
                                                     }
-                                                } else {
-                                                    fprintf(outputFile, "Error: Expected data type keyword\n");
-                                                }
                                             } else {
                                                 fprintf(outputFile, "Error: Expected opening parenthesis '('\n");
                                             }
@@ -498,109 +513,112 @@ void Conditional_Stmt(Token* tokens, int* index, int tokenCount, FILE* outputFil
 
     // Check for the INPUT_KEYWORD token (e.g., 'quando')
     if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "quando") == 0) {
-        fprintf(outputFile, "(CONDITIONAL_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print CONDITIONAL_KEYWORD
+        fprintf(outputFile, "{CONDITIONAL_STATEMENT: \n");
+        fprintf(outputFile, "(KEYWORD: %s)\n", tokens[*index].lexeme); // Print CONDITIONAL_KEYWORD
         (*index)++;
 
         // Check for opening parenthesis 'quando ('
         if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
-            fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
+            fprintf(outputFile, "(DELIMETER: %s)\n", tokens[*index].lexeme); // Print opening parenthesis
             (*index)++;
 
             // Expect a variable 'quando (variable'
             if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
-                fprintf(outputFile, "(VARIABLE: %s)", tokens[*index].lexeme); // Print variable
+                fprintf(outputFile, "(VARIABLE: %s)\n", tokens[*index].lexeme); // Print variable
                 (*index)++;
 
                 // Expect Relational OP 'quando (variable relational_op'
                 if (strcmp(tokens[*index].tokenType, "RELATIONAL_OP") == 0) {
-                    fprintf(outputFile, "(RELATIONAL_OP: %s)", tokens[*index].lexeme); // Print variable
+                    fprintf(outputFile, "(RELATIONAL_OP: %s)\n", tokens[*index].lexeme); // Print variable
                     (*index)++;
 
                     // Check for init value 'quando (variable relational_op init_value'
-                    if (*index < tokenCount && strcmp(tokens[*index].tokenType, "INTEGER_LITERAL") == 0 ||
-                        strcmp(tokens[*index].tokenType, "FLOAT_LITERAL") == 0 || 
-                        strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0 || 
-                        strcmp(tokens[*index].tokenType, "CHAR_LITERAL") == 0 ) {
-                        fprintf(outputFile, "(%s: %s)", tokens[*index].tokenType, tokens[*index].lexeme); // Print init_value
+                    if (strcmp(tokens[*index].tokenType, "INTEGER_LITERAL") == 0 ||
+                        strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0 ||
+                        strcmp(tokens[*index].tokenType, "CHARACTER_LITERAL") == 0 ||
+                        strcmp(tokens[*index].tokenType, "FLOAT_LITERAL") == 0) {
+                        fprintf(outputFile, "(%s: %s)\n", tokens[*index].tokenType, tokens[*index].lexeme); // Print STRING_LITERAL
                         (*index)++;
 
                         // Check for closing parenthesis ')' 'quando (variable relational_op init_value)'
                         if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
-                            fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
+                            fprintf(outputFile, "(DELIMETER: %s)\n", tokens[*index].lexeme); // Print closing parenthesis
                             (*index)++;
                                 
                             // Check for opening curly braces 'quando (variable relational_op init_value) {' 
                             if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "{") == 0) {
-                                fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
+                                fprintf(outputFile, "(DELIMETER: %s)\n", tokens[*index].lexeme); // Print closing parenthesis
                                 (*index)++;
 
                                 Output_Stmt(tokens, index, tokenCount, outputFile); // Handle the disp statement
+                                
 
                                     // Check for closing curly braces 'quando (variable relational_op init_value) { disp (string_literal) // }'
                                     if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "}") == 0) {
-                                        fprintf(outputFile, "(DELIMETER: %s))\n", tokens[*index].lexeme); // Print closing curly braces
+                                        fprintf(outputFile, "(DELIMETER: %s)\n", tokens[*index].lexeme); // Print closing curly braces
                                         (*index)++;
 
                                         // Check for the KEYWORD token (must be "opt")  'opt    
                                         if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "opt") == 0) {
-                                            fprintf(outputFile, "(KEYWORD: %s)", tokens[*index].lexeme); // Print KEYWORD
+                                            fprintf(outputFile, "(KEYWORD: %s)\n", tokens[*index].lexeme); // Print KEYWORD
                                             (*index)++;
 
                                             // Check for opening parenthesis 'opt ('
                                             if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
-                                                fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
+                                                fprintf(outputFile, "(DELIMETER: %s)\n", tokens[*index].lexeme); // Print opening parenthesis
                                                 (*index)++;
 
                                                 // Expect a variable 'opt (variable'
                                                 if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
-                                                    fprintf(outputFile, "(VARIABLE: %s)", tokens[*index].lexeme); // Print variable
+                                                    fprintf(outputFile, "(VARIABLE: %s)\n", tokens[*index].lexeme); // Print variable
                                                     (*index)++;
                                                                             
                                                     // Expect Relational OP 'opt (variable relational_op'
                                                     if (strcmp(tokens[*index].tokenType, "RELATIONAL_OP") == 0) {
-                                                        fprintf(outputFile, "(RELATIONAL_OP: %s)", tokens[*index].lexeme); // Print variable
+                                                        fprintf(outputFile, "(RELATIONAL_OP: %s)\n", tokens[*index].lexeme); // Print variable
                                                         (*index)++;
 
                                                         // Check for init value 'opt (variable relational_op init_value'
-                                                        if (*index < tokenCount && strcmp(tokens[*index].tokenType, "INTEGER_LITERAL") == 0 ||
-                                                            strcmp(tokens[*index].tokenType, "FLOAT_LITERAL") == 0 || 
-                                                            strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0 || 
-                                                            strcmp(tokens[*index].tokenType, "CHAR_LITERAL") == 0 ) {
-                                                            fprintf(outputFile, "(%s: %s)", tokens[*index].tokenType, tokens[*index].lexeme); // Print init_value
+                                                        if (strcmp(tokens[*index].tokenType, "INTEGER_LITERAL") == 0 ||
+                                                            strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0 ||
+                                                            strcmp(tokens[*index].tokenType, "CHARACTER_LITERAL") == 0 ||
+                                                            strcmp(tokens[*index].tokenType, "FLOAT_LITERAL") == 0) {
+                                                            fprintf(outputFile, "(%s: %s)\n", tokens[*index].tokenType, tokens[*index].lexeme); // Print STRING_LITERAL
                                                             (*index)++;
 
                                                             // Check for closing parenthesis 'opt (variable relational_op init_value)'
                                                             if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
-                                                                fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
+                                                                fprintf(outputFile, "(DELIMETER: %s)\n", tokens[*index].lexeme); // Print closing parenthesis
                                                                 (*index)++;
 
                                                                 // Check for opening curly braces 'opt (variable relational_op init_value) {'
                                                                 if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "{") == 0) {
-                                                                    fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
+                                                                    fprintf(outputFile, "(DELIMETER: %s)\n", tokens[*index].lexeme); // Print closing parenthesis
                                                                     (*index)++;
 
                                                                     Output_Stmt(tokens, index, tokenCount, outputFile); // Handle the disp statement
+                                                                    (*index)++;
                                                                                                                             
                                                                         // Check for 'opt (variable relational_op init_value) { disp(STRING_LITERAL) // }'
                                                                         if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "}") == 0) {
-                                                                        fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme); // Print closing curly braces
+                                                                        fprintf(outputFile, "(DELIMETER: %s)\n", tokens[*index].lexeme); // Print closing curly braces
                                                                         (*index)++;
 
                                                                             // Check for 'alt'
                                                                             if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "alt") == 0) {
-                                                                                fprintf(outputFile, "(CONDITIONAL_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print CONDITIONAL_KEYWORD
+                                                                                fprintf(outputFile, "(KEYWORD: %s)\n", tokens[*index].lexeme); // Print CONDITIONAL_KEYWORD
                                                                                 (*index)++;
 
                                                                                 // Check for 'alt {'
                                                                                 if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "{") == 0) {
-                                                                                    fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
+                                                                                    fprintf(outputFile, "(DELIMETER: %s)\n", tokens[*index].lexeme); // Print closing parenthesis
                                                                                     (*index)++;
 
                                                                                     Output_Stmt(tokens, index, tokenCount, outputFile); // Handle the disp statement
 
                                                                                         // Check for 'alt { disp(STRING_LITERAL) // }'
                                                                                         if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "}") == 0) {
-                                                                                            fprintf(outputFile, "(DELIMETER: %s)\n\n", tokens[*index].lexeme); // Print closing curly braces
+                                                                                            fprintf(outputFile, "(DELIMETER: %s)\n", tokens[*index].lexeme); // Print closing curly braces
                                                                                             (*index)++;
                                                                                         } else { // Error Check for 'alt { disp(STRING_LITERAL) // }'
                                                                                             fprintf(outputFile, "Error: Expected closing curly braces '}'\n");
@@ -636,19 +654,19 @@ void Conditional_Stmt(Token* tokens, int* index, int tokenCount, FILE* outputFil
 
                                         // If no opt encountered check for 'alt'
                                         } else if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "alt") == 0) { 
-                                            fprintf(outputFile, "(KEYWORD: %s)", tokens[*index].lexeme); // Print CONDITIONAL_KEYWORD
+                                            fprintf(outputFile, "(KEYWORD: %s)\n", tokens[*index].lexeme); // Print CONDITIONAL_KEYWORD
                                             (*index)++;
 
                                             // Check for opening curly braces 'alt {'
                                             if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "{") == 0) {
-                                                fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
+                                                fprintf(outputFile, "(DELIMETER: %s)\n", tokens[*index].lexeme); // Print closing parenthesis
                                                 (*index)++;
 
                                                 Output_Stmt(tokens, index, tokenCount, outputFile); // Handle the disp statement
 
                                                     // Check for 'alt { disp(STRING_LITERAL) // }'
                                                     if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "}") == 0) {
-                                                        fprintf(outputFile, "(DELIMETER: %s)\n\n", tokens[*index].lexeme); // Print closing curly braces
+                                                        fprintf(outputFile, "(DELIMETER: %s)}\n\n", tokens[*index].lexeme); // Print closing curly braces
                                                         (*index)++;
                                                     } else { // Error Check for 'alt { disp(STRING_LITERAL) // }'
                                                         fprintf(outputFile, "Error: Expected closing curly braces '}'\n");
@@ -669,7 +687,7 @@ void Conditional_Stmt(Token* tokens, int* index, int tokenCount, FILE* outputFil
                         } else { // Error Check for 'quando (variable relational_op init_value)'
                             fprintf(outputFile, "Error: Expected closing parenthesis ')'\n");
                         }
-                    } else { // Error Check for 'quando (variable relational_op init_value'
+                    } else { // Error Check for 'quando (variable relational_op' init_value
                         fprintf(outputFile, "Error: Expected init_value\n");
                     }
                 } else { // Error Check for 'quando (variable relational_op'
@@ -692,66 +710,53 @@ void Declaration_Stmt(Token* tokens, int* index, int tokenCount, FILE* outputFil
     if (*index >= tokenCount) return;
 
     // Check for a valid data type keyword
-    if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 &&
-        (strcmp(tokens[*index].lexeme, "numbra") == 0 || 
-         strcmp(tokens[*index].lexeme, "deca") == 0 || 
-         strcmp(tokens[*index].lexeme, "duplus") == 0 || 
-         strcmp(tokens[*index].lexeme, "signa") == 0 || 
-         strcmp(tokens[*index].lexeme, "binar") == 0)) {
-        fprintf(outputFile, "(DECLARATION_STATEMENT(KEYWORD(Data Type): %s)", tokens[*index].lexeme);
-        (*index)++;
+    fprintf(outputFile, "(DECLARATION_STATEMENT: \n     ");
+    Data_Type(tokens, index, tokenCount, outputFile);
 
         // Parse the variable list and optional assignments
         int expectComma = 0; // Track whether we expect a comma next
 
         while (*index < tokenCount) {
+            // Handle variable decla
             if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
                 // Print variable and proceed
-                fprintf(outputFile, "(VARIABLE: %s)", tokens[*index].lexeme);
+                fprintf(outputFile, "       (VARIABLE: %s)\n", tokens[*index].lexeme);
                 (*index)++;
                 expectComma = 1; // After a variable, expect a comma or other tokens
+            // Handle assignment decla
             } else if (strcmp(tokens[*index].tokenType, "ASSIGNMENT_OP") == 0) {
                 // Handle assignment to a variable
-                fprintf(outputFile, "(ASSIGNMENT_OP: %s)", tokens[*index].lexeme);
+                fprintf(outputFile, "           (ASSIGNMENT_OP: %s)\n", tokens[*index].lexeme);
                 (*index)++;
 
                 // Expect an initialization value
-                if (*index < tokenCount &&
-                    (strcmp(tokens[*index].tokenType, "INTEGER_LITERAL") == 0 ||
-                     strcmp(tokens[*index].tokenType, "FLOAT_LITERAL") == 0 ||
-                     strcmp(tokens[*index].tokenType, "STRING_LITERAL") == 0 ||
-                     strcmp(tokens[*index].tokenType, "CHAR_LITERAL") == 0)) {
-                    fprintf(outputFile, "(%s: %s)", tokens[*index].tokenType, tokens[*index].lexeme);
-                    (*index)++;
-                } else {
-                    fprintf(outputFile, "Error: Expected an initialization value after '='\n");
-                    return;
-                }
+                fprintf(outputFile, "           ");
+                Init_Value(tokens, index, tokenCount, outputFile);
+                
+                
                 expectComma = 1; // After an assignment, expect a comma or other tokens
+            // Handle commas between variables
             } else if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 &&
                        strcmp(tokens[*index].lexeme, ",") == 0) {
                 // Handle a comma between variables
-                fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme);
+                fprintf(outputFile, "               (DELIMETER: %s)\n", tokens[*index].lexeme);
                 (*index)++;
                 expectComma = 0; // After a comma, expect a variable or assignment
+            //Handle line terminator
             } else if (strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0) {
                 // Handle the line terminator and close the statement
-                fprintf(outputFile, "(LINE_TERMINATOR: %s))\n\n", tokens[*index].lexeme);
+                fprintf(outputFile, "                   (LINE_TERMINATOR: %s))\n\n", tokens[*index].lexeme);
                 (*index)++;
                 return;
             } else {
-                fprintf(outputFile, "Error: Unexpected token '%s' on line %d\n",
-                        tokens[*index].lexeme, tokens[*index].line);
+                printf("\n");
                 return;
             }
         }
 
         if (expectComma) {
-            fprintf(outputFile, "Error: Statement ends unexpectedly after ','\n");
+            fprintf(outputFile, "       Error: Statement ends unexpectedly after ','\n");
         }
-    } else {
-        fprintf(outputFile, "Error: Expected a data type keyword\n");
-    }
 }
 
 // Input statement parser
@@ -760,37 +765,38 @@ void Input_Stmt(Token* tokens, int* index, int tokenCount, FILE* outputFile) {
 
     // Check for the INPUT_KEYWORD token (e.g., 'fetch')
     if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "fetch") == 0) {
-        fprintf(outputFile, "(INPUT_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print INPUT_KEYWORD
+        fprintf(outputFile, "(INPUT_STATEMENT");
+        fprintf(outputFile, "   (KEYWORD: %s)\n", tokens[*index].lexeme); // Print INPUT_KEYWORD
         (*index)++;
 
         // Check for opening parenthesis '('
         if (*index < tokenCount && strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
-            fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
+            fprintf(outputFile, "       (DELIMETER: %s)\n", tokens[*index].lexeme); // Print opening parenthesis
             (*index)++;
 
             // Check for FORMAT_SPECIFIER token
             if (*index < tokenCount && strcmp(tokens[*index].tokenType, "FORMAT_SPECIFIER") == 0) {
-                fprintf(outputFile, "(FORMAT_SPECIFIER: %s)", tokens[*index].lexeme); // Print FORMAT_SPECIFIER
+                fprintf(outputFile, "           (FORMAT_SPECIFIER: %s)\n", tokens[*index].lexeme); // Print FORMAT_SPECIFIER
                 (*index)++;
 
                 // Check for comma
                 if (*index < tokenCount && strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ",") == 0) {
-                    fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme); // Print comma
+                    fprintf(outputFile, "               (DELIMETER: %s)\n", tokens[*index].lexeme); // Print comma
                     (*index)++;
 
                     // Check for VARIABLE token
                     if (*index < tokenCount && strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
-                        fprintf(outputFile, "(VARIABLE: %s)", tokens[*index].lexeme); // Print VARIABLE
+                        fprintf(outputFile, "                   (VARIABLE: %s)\n", tokens[*index].lexeme); // Print VARIABLE
                         (*index)++;
 
                         // Check for closing parenthesis ')'
                         if (*index < tokenCount && strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
-                            fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
+                            fprintf(outputFile, "                   (DELIMETER: %s)\n", tokens[*index].lexeme); // Print closing parenthesis
                             (*index)++;
 
                             // Check for LINE_TERMINATOR token
                             if (*index < tokenCount && strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0) {
-                                fprintf(outputFile, "(LINE_TERMINATOR: %s))\n\n", tokens[*index].lexeme); // Print LINE_TERMINATOR
+                                fprintf(outputFile, "                   (LINE_TERMINATOR: %s))\n\n", tokens[*index].lexeme); // Print LINE_TERMINATOR
                                 (*index)++;
                             } else {
                                 fprintf(outputFile, "Error: Expected line terminator (//)\n");
@@ -821,12 +827,13 @@ void Assign_Stmt(Token* tokens, int* index, int tokenCount, FILE* outputFile) {
 
     // Check for the VARIABLE token (e.g., @age)
     if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
-        fprintf(outputFile, "(ASSIGNMENT_STATEMENT(VARIABLE: %s)", tokens[*index].lexeme); // Print VARIABLE
+        fprintf(outputFile, "{ASSIGNMENT_STATEMENT\n");
+        fprintf(outputFile, "   (VARIABLE: %s)\n", tokens[*index].lexeme); // Print VARIABLE
         (*index)++;
 
         // Check for the ASSIGNMENT_OP token (e.g., '=')
         if (*index < tokenCount && strcmp(tokens[*index].tokenType, "ASSIGNMENT_OP") == 0) {
-            fprintf(outputFile, "(ASSIGNMENT_OP: %s)", tokens[*index].lexeme); // Print ASSIGNMENT_OP
+            fprintf(outputFile, "       (ASSIGNMENT_OP: %s)\n", tokens[*index].lexeme); // Print ASSIGNMENT_OP
             (*index)++;
 
             // Validate the right-hand side of the assignment
@@ -838,17 +845,17 @@ void Assign_Stmt(Token* tokens, int* index, int tokenCount, FILE* outputFile) {
                     strcmp(tokens[*index].tokenType, "INTEGER_LITERAL") == 0 ||
                     strcmp(tokens[*index].tokenType, "FLOAT_LITERAL") == 0)) {
                     // Valid operand
-                    fprintf(outputFile, "(%s: %s)", tokens[*index].tokenType, tokens[*index].lexeme);
+                    fprintf(outputFile, "           (%s: %s)\n", tokens[*index].tokenType, tokens[*index].lexeme);
                     (*index)++;
                     expectOperand = 0; // Next, expect an operator or a line terminator
                 } else if (!expectOperand && strcmp(tokens[*index].tokenType, "ARITHMETIC_OP") == 0) {
                     // Valid operator
-                    fprintf(outputFile, "(ARITHMETIC_OP: %s)", tokens[*index].lexeme);
+                    fprintf(outputFile, "               (ARITHMETIC_OP: %s\n)", tokens[*index].lexeme);
                     (*index)++;
                     expectOperand = 1; // Next, expect an operand
                 } else if (!expectOperand && strcmp(tokens[*index].tokenType, "LINE_TERMINATOR") == 0) {
                     // End of a valid assignment statement
-                    fprintf(outputFile, "(LINE_TERMINATOR: %s))\n\n", tokens[*index].lexeme);
+                    fprintf(outputFile, "               (LINE_TERMINATOR: %s)}\n\n", tokens[*index].lexeme);
                     (*index)++;
                     return;
                 } else {
@@ -859,9 +866,9 @@ void Assign_Stmt(Token* tokens, int* index, int tokenCount, FILE* outputFile) {
             }
 
             // If we exit the loop without a LINE_TERMINATOR, it is an error
-            fprintf(outputFile, "Error: Expected line terminator (//) at the end of assignment\n");
+            fprintf(outputFile, "       Error: Expected line terminator (//) at the end of assignment\n");
         } else {
-            fprintf(outputFile, "Error: Expected assignment operator (=)\n");
+            fprintf(outputFile, "   Error: Expected assignment operator (=)\n");
         }
     } else {
         fprintf(outputFile, "Error: Expected a variable\n");
