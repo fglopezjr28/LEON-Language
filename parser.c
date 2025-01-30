@@ -164,12 +164,13 @@ void Iterative_Stmt(Token* tokens, int* index, int tokenCount, FILE* outputFile)
 
     //  for_statement Check for the KEYWORD token (must be "pro")
     if (strcmp(tokens[*index].tokenType, "KEYWORD") == 0 && strcmp(tokens[*index].lexeme, "pro") == 0) {
-        fprintf(outputFile, "(ITERATIVE_STATEMENT(KEYWORD: %s)", tokens[*index].lexeme); // Print pro
+        fprintf(outputFile, "{ITERATIVE_STATEMENT");
+        fprintf(outputFile, "(KEYWORD: %s)\n", tokens[*index].lexeme); // Print pro
         (*index)++;
 
         // Check for opening parenthesis 'pro ('
         if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "(") == 0) {
-            fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme); // Print opening parenthesis
+            fprintf(outputFile, "(DELIMETER: %s)\n", tokens[*index].lexeme); // Print opening parenthesis
             (*index)++;
 
             // Check for opening parenthesis 'pro ( data_type'
@@ -177,74 +178,74 @@ void Iterative_Stmt(Token* tokens, int* index, int tokenCount, FILE* outputFile)
 
                 // Check for variable 'pro ( data_type variable'
                 if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
-                    fprintf(outputFile, "(VARIABLE: %s)", tokens[*index].lexeme); // Print variable
+                    fprintf(outputFile, "(VARIABLE: %s)\n", tokens[*index].lexeme); // Print variable
                     (*index)++;
 
                     // Check for assignment operator 'pro ( data_type variable ='
                     if (strcmp(tokens[*index].tokenType, "ASSIGNMENT_OP") == 0 && strcmp(tokens[*index].lexeme, "=") == 0) {
-                        fprintf(outputFile, "(ASSIGNMENT_OP: %s)", tokens[*index].lexeme); // Print assignment operator
+                        fprintf(outputFile, "(ASSIGNMENT_OP: %s)\n", tokens[*index].lexeme); // Print assignment operator
                         (*index)++;
 
                         // Check for INTEGER_LITERAL token 'pro ( data_type variable = INTEGER_LITERAL'
                         if (strcmp(tokens[*index].tokenType, "INTEGER_LITERAL") == 0) {
-                            fprintf(outputFile, "(INTEGER_LITERAL: %s)", tokens[*index].lexeme); // Print INTEGER_LITERAL
+                            fprintf(outputFile, "(INTEGER_LITERAL: %s)\n", tokens[*index].lexeme); // Print INTEGER_LITERAL
                             (*index)++;
 
                             // Check for semicolon 'pro ( data_type variable = INTEGER_LITERAL ;'
                              if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ";") == 0) {
-                                fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme); // Print semicolon
+                                fprintf(outputFile, "(DELIMETER: %s)\n", tokens[*index].lexeme); // Print semicolon
                                 (*index)++;
 
                                 // Check for variable 'pro ( data_type variable = INTEGER_LITERAL ; variable'
                                 if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
-                                    fprintf(outputFile, "(VARIABLE: %s)", tokens[*index].lexeme); // Print variable
+                                    fprintf(outputFile, "(VARIABLE: %s)\n", tokens[*index].lexeme); // Print variable
                                     (*index)++;
 
                                     // Check for relational operator 'pro ( data_type variable = INTEGER_LITERAL ; variable relational_op'
                                     if (strcmp(tokens[*index].tokenType, "RELATIONAL_OP") == 0) {
-                                        fprintf(outputFile, "(RELATIONAL_OP: %s)", tokens[*index].lexeme); // Print relational operator
+                                        fprintf(outputFile, "(RELATIONAL_OP: %s)\n", tokens[*index].lexeme); // Print relational operator
                                         (*index)++;
 
                                         // Check for INTEGER_LITERAL token 'pro ( data_type variable = INTEGER_LITERAL ; variable relational_op INTEGER_LITERAL'
                                         if (strcmp(tokens[*index].tokenType, "INTEGER_LITERAL") == 0) {
-                                            fprintf(outputFile, "(INTEGER_LITERAL: %s)", tokens[*index].lexeme); // Print INTEGER_LITERAL
+                                            fprintf(outputFile, "(INTEGER_LITERAL: %s)\n", tokens[*index].lexeme); // Print INTEGER_LITERAL
                                             (*index)++;
 
                                             // Check for semicolon 'pro ( data_type variable = INTEGER_LITERAL ;'
                                             if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ";") == 0) {
-                                                fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme); // Print semicolon
+                                                fprintf(outputFile, "(DELIMETER: %s)\n", tokens[*index].lexeme); // Print semicolon
                                                 (*index)++;
 
                                                 // Check for variable 'pro ( data_type variable = INTEGER_LITERAL ; variable'
                                                 if (strcmp(tokens[*index].tokenType, "VARIABLE") == 0) {
-                                                    fprintf(outputFile, "(VARIABLE: %s)", tokens[*index].lexeme); // Print variable
+                                                    fprintf(outputFile, "(VARIABLE: %s)\n", tokens[*index].lexeme); // Print variable
                                                     (*index)++;
 
                                                     // Check for relational operator 'pro ( data_type variable = INTEGER_LITERAL ; variable +'
                                                     if (strcmp(tokens[*index].tokenType, "ARITHMETIC_OP") == 0) {
-                                                        fprintf(outputFile, "(ARITHMETIC_OP: %s)", tokens[*index].lexeme); // Print arithmetic operator
+                                                        fprintf(outputFile, "(ARITHMETIC_OP: %s)\n", tokens[*index].lexeme); // Print arithmetic operator
                                                         (*index)++;
 
                                                         // Check for relational operator 'pro ( data_type variable = INTEGER_LITERAL ; variable ++'
                                                         if (strcmp(tokens[*index].tokenType, "ARITHMETIC_OP") == 0) {
-                                                            fprintf(outputFile, "(ARITHMETIC_OP: %s)", tokens[*index].lexeme); // Print arithmetic operator
+                                                            fprintf(outputFile, "(ARITHMETIC_OP: %s)\n", tokens[*index].lexeme); // Print arithmetic operator
                                                             (*index)++;
 
                                                             // Check for delimeter 'pro ( data_type variable = INTEGER_LITERAL ; variable ++ )'
                                                             if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, ")") == 0) {
-                                                                fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme); // Print closing parenthesis
+                                                                fprintf(outputFile, "(DELIMETER: %s)\n", tokens[*index].lexeme); // Print closing parenthesis
                                                                 (*index)++;
 
                                                                 // Check for opening curly braces 'pro ( data_type variable = INTEGER_LITERAL ; variable ++ ) {'
                                                                 if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "{") == 0) {
-                                                                    fprintf(outputFile, "(DELIMETER: %s)", tokens[*index].lexeme); // Print opening curly braces
+                                                                    fprintf(outputFile, "(DELIMETER: %s)\n", tokens[*index].lexeme); // Print opening curly braces
                                                                     (*index)++;
 
                                                                     Output_Stmt(tokens, index, tokenCount, outputFile); // Handle the disp statement
 
                                                                         // Check for closing curly braces 'pro ( data_type variable = INTEGER_LITERAL ; variable ++ ) { disp (string_literal) // }'
                                                                         if (strcmp(tokens[*index].tokenType, "DELIMETER") == 0 && strcmp(tokens[*index].lexeme, "}") == 0) {
-                                                                            fprintf(outputFile, "(DELIMETER: %s))\n\n", tokens[*index].lexeme); // Print closing curly braces
+                                                                            fprintf(outputFile, "(DELIMETER: %s)}\n\n", tokens[*index].lexeme); // Print closing curly braces
                                                                             (*index)++;
                                                                         } else { 
                                                                             fprintf(outputFile, "Error: Expected closing curly braces '}'\n");
@@ -703,7 +704,6 @@ void Conditional_Stmt(Token* tokens, int* index, int tokenCount, FILE* outputFil
         fprintf(outputFile, "Error: Expected conditional keyword 'quando'\n");
     }
 }
-
 
 // Declaration Statement parser
 void Declaration_Stmt(Token* tokens, int* index, int tokenCount, FILE* outputFile) {
